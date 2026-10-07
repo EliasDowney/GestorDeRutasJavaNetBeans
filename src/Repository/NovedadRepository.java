@@ -1,13 +1,39 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Repository;
 
-/**
- *
- * @author Estudiantes
- */
+import Model.NovedadModel;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class NovedadRepository {
-    
+
+    private final List<NovedadModel> novedades = new ArrayList<>();
+    private int siguienteId = 1;
+
+    public List<NovedadModel> listar() {
+        return new ArrayList<>(novedades);
+    }
+
+    public NovedadModel buscarPorId(int idNovedad) {
+        return novedades.stream()
+                .filter(n -> n.getIdNovedad() == idNovedad)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void guardar(NovedadModel novedad) {
+        if (novedad.getIdNovedad() == 0) {
+            novedad.setIdNovedad(siguienteId++);
+        }
+        NovedadModel existente = buscarPorId(novedad.getIdNovedad());
+        if (existente != null) {
+            novedades.set(novedades.indexOf(existente), novedad);
+        } else {
+            novedades.add(novedad);
+        }
+    }
+
+    public boolean eliminar(int idNovedad) {
+        return novedades.removeIf(n -> n.getIdNovedad() == idNovedad);
+    }
 }
