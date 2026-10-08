@@ -15,7 +15,7 @@ public class RutaModel {
 //Relacion con demás clases
     private List<EstudianteModel> listaEstudiantes;//una ruta ; muchos estudiantes
     private ConductorModel conductor; // un conductor; una ruta
-    private VehiculoModel Vehiculo; // un vehiculoj ;una ruta
+    private Vehiculo Vehiculo; // un vehiculoj ;una ruta
     private CordinadorModel Cordinador; //
     
 //Listar estudiiantes... 
@@ -23,7 +23,7 @@ public class RutaModel {
         this.listaEstudiantes = new ArrayList<>();
     }
 
-    public RutaModel(int idRuta, String nombre, LocalTime horaSalida, LocalTime horaFinal, String estado, List listaEstudiantes, ConductorModel conductor, VehiculoModel Vehiculo, CordinadorModel Cordinador) {
+    public RutaModel(int idRuta, String nombre, LocalTime horaSalida, LocalTime horaFinal, String estado, List listaEstudiantes, ConductorModel conductor, Vehiculo Vehiculo, CordinadorModel Cordinador) {
         this.idRuta = idRuta;
         this.nombre = nombre;
         this.horaSalida = horaSalida; //lista para guardar estudiantes  
@@ -91,11 +91,11 @@ public class RutaModel {
         this.conductor = conductor;
     }
 
-    public VehiculoModel getVehiculo() {
+    public Vehiculo getVehiculo() {
         return Vehiculo;
     }
 
-    public void setVehiculo(VehiculoModel Vehiculo) {
+    public void setVehiculo(Vehiculo Vehiculo) {
         this.Vehiculo = Vehiculo;
     }
 

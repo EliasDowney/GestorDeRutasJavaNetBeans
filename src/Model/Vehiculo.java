@@ -1,21 +1,21 @@
 package Model;
 
-public class VehiculoModel {
+public class Vehiculo {
     private int idVehiculo;
     private String placa;
     private int capacidad;
     private String estado;
 
-    public VehiculoModel() {
+    public Vehiculo() {
     }
 
-    public VehiculoModel(int idVehiculo, String placa, int capacidad, String estado) {
+    public Vehiculo(int idVehiculo, String placa, int capacidad, String estado) {
         this.idVehiculo = idVehiculo;
         this.placa = placa;
         this.capacidad = capacidad;
         this.estado = estado;
     }
-
+    
     public int getIdVehiculo() {
         return idVehiculo;
     }
