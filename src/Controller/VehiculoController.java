@@ -1,10 +1,10 @@
 package Controller;
-
+import Model.VehiculoModel;
 import Service.VehiculoService;
 
 public class VehiculoController {
-
-    private VehiculoService service;
+    
+private VehiculoService service;
     
     public VehiculoController()
     {
