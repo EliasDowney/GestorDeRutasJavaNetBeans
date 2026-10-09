@@ -1,13 +1,32 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Service;
 
-/**
- *
- * @author Estudiantes
- */
+import Model.ConductorModel;
+import Repository.ConductorRepository;
+import java.sql.SQLException;
+import java.util.List;
+
 public class ConductorService {
-    
+
+    private final ConductorRepository repositorio = new ConductorRepository();
+
+    public int guardar(ConductorModel c) throws SQLException {
+        return repositorio.guardar(c);
+    }
+
+    public List<ConductorModel> listar() throws SQLException {
+        return repositorio.listar();
+    }
+
+    public ConductorModel buscarPorId(int id) throws SQLException {
+        return repositorio.buscarPorId(id);
+    }
+
+    public boolean actualizar(ConductorModel c) throws SQLException {
+        return repositorio.actualizar(c);
+    }
+
+    public boolean eliminar(int id) throws SQLException {
+        return repositorio.eliminar(id);
+    }
+
 }

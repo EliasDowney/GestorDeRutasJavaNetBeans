@@ -1,29 +1,30 @@
-
 package Model;
 
-
 public class UsuarioModel {
-    private int id;
+
+    private String documento;
     private String nombre;
+    private String apellido;
     private String telefono;
     private String estado;
 
     public UsuarioModel() {
     }
 
-    public UsuarioModel(int id, String nombre, String telefono, String estado) {
-        this.id = id;
+    public UsuarioModel(String documento, String nombre, String apellido, String telefono, String estado) {
+        this.documento = documento;
         this.nombre = nombre;
+        this.apellido = apellido;
         this.telefono = telefono;
         this.estado = estado;
     }
 
-    public int getId() {
-        return id;
+    public String getDocumento() {
+        return documento;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public String getNombre() {
@@ -32,6 +33,14 @@ public class UsuarioModel {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
     }
 
     public String getTelefono() {
@@ -49,6 +58,5 @@ public class UsuarioModel {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-    
-    
+
 }
