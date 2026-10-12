@@ -1,33 +1,32 @@
 package Service;
-import Model.Vehiculo;
+
+import Model.VehiculoModel;
 import Repository.VehiculoRepository;
+import java.sql.SQLException;
 import java.util.List;
 
 public class VehiculoService {
-    
-    private VehiculoRepository repository;
-    
-    public VehiculoService()
-    {
-        this.repository = new VehiculoRepository();
+
+    private final VehiculoRepository repositorio = new VehiculoRepository();
+
+    public int guardar(VehiculoModel v) throws SQLException {
+        return repositorio.guardar(v);
     }
-    
-    public List<Vehiculo> listarVehiculos()
-    {
-        return repository.listar();
+
+    public List<VehiculoModel> listar() throws SQLException {
+        return repositorio.listar();
     }
-    
-    public boolean guardarVehiculo(Vehiculo vehiculo)
-    {
-        return repository.guardar(vehiculo);
+
+    public VehiculoModel buscarPorId(int id) throws SQLException {
+        return repositorio.buscarPorId(id);
     }
-    
-    public boolean actualizarVehiculo(Vehiculo vehiculo) 
-    {
-        return repository.actualizar(vehiculo);
+
+    public boolean actualizar(VehiculoModel v) throws SQLException {
+        return repositorio.actualizar(v);
     }
-    public boolean eliminarVehiculo(int id) 
-    {
-        return repository.eliminar(id);
+
+    public boolean eliminar(int id) throws SQLException {
+        return repositorio.eliminar(id);
     }
+
 }

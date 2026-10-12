@@ -1,38 +1,31 @@
-
 package Model;
 
-import java.time.LocalTime; //la utilizaremos para manejar datos de hora
-import java.util.ArrayList; //para implementar las listas de estudiantes
-import java.util.List; //para listar onjetos
+import java.time.LocalTime;
 
 public class RutaModel {
-    private int idRuta; // se me paso preguntar asi "AWD123" o asi "12"
+
+    private int idRuta;
     private String nombre;
-    private LocalTime horaSalida; 
+    private LocalTime horaSalida;
     private LocalTime horaFinal;
-    private String estado; // Estado de la ruta (ej: "En curso", "Finalizada")
-    
-//Relacion con demás clases
-    private List<EstudianteModel> listaEstudiantes;//una ruta ; muchos estudiantes
-    private ConductorModel conductor; // un conductor; una ruta
-    private Vehiculo Vehiculo; // un vehiculoj ;una ruta
-    private CordinadorModel Cordinador; //
-    
-//Listar estudiiantes... 
+    private String estado;
+    private int idConductor;
+    private int idVehiculo;
+    private int idCoordinador;
+
     public RutaModel() {
-        this.listaEstudiantes = new ArrayList<>();
     }
 
-    public RutaModel(int idRuta, String nombre, LocalTime horaSalida, LocalTime horaFinal, String estado, List listaEstudiantes, ConductorModel conductor, Vehiculo Vehiculo, CordinadorModel Cordinador) {
+    public RutaModel(int idRuta, String nombre, LocalTime horaSalida, LocalTime horaFinal, String estado,
+            int idConductor, int idVehiculo, int idCoordinador) {
         this.idRuta = idRuta;
         this.nombre = nombre;
-        this.horaSalida = horaSalida; //lista para guardar estudiantes  
+        this.horaSalida = horaSalida;
         this.horaFinal = horaFinal;
         this.estado = estado;
-        this.listaEstudiantes = listaEstudiantes;
-        this.conductor = conductor;
-        this.Vehiculo = Vehiculo;
-        this.Cordinador = Cordinador;
+        this.idConductor = idConductor;
+        this.idVehiculo = idVehiculo;
+        this.idCoordinador = idCoordinador;
     }
 
     public int getIdRuta() {
@@ -75,37 +68,33 @@ public class RutaModel {
         this.estado = estado;
     }
 
-    public List<EstudianteModel> getListaEstudiantes() {
-        return listaEstudiantes;
+    public int getIdConductor() {
+        return idConductor;
     }
 
-    public void setListaEstudiantes(List<EstudianteModel> listaEstudiantes) {
-        this.listaEstudiantes = listaEstudiantes;
+    public void setIdConductor(int idConductor) {
+        this.idConductor = idConductor;
     }
 
-    public ConductorModel getConductor() {
-        return conductor;
+    public int getIdVehiculo() {
+        return idVehiculo;
     }
 
-    public void setConductor(ConductorModel conductor) {
-        this.conductor = conductor;
+    public void setIdVehiculo(int idVehiculo) {
+        this.idVehiculo = idVehiculo;
     }
 
-    public Vehiculo getVehiculo() {
-        return Vehiculo;
+    public int getIdCoordinador() {
+        return idCoordinador;
     }
 
-    public void setVehiculo(Vehiculo Vehiculo) {
-        this.Vehiculo = Vehiculo;
+    public void setIdCoordinador(int idCoordinador) {
+        this.idCoordinador = idCoordinador;
     }
 
-    public CordinadorModel getCordinador() {
-        return Cordinador;
+    @Override
+    public String toString() {
+        return nombre + " (" + horaSalida + " - " + horaFinal + ")";
     }
 
-    public void setCordinador(CordinadorModel Cordinador) {
-        this.Cordinador = Cordinador;
-    }
-    
-    
 }
