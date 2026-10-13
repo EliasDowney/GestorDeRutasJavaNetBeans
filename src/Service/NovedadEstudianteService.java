@@ -17,6 +17,14 @@ public class NovedadEstudianteService {
         return repositorio.listar();
     }
 
+    public NovedadEstudianteModel buscarPorId(int idNovedad) throws SQLException {
+        return repositorio.buscarPorId(idNovedad);
+    }
+
+    public boolean actualizar(NovedadEstudianteModel n) throws SQLException {
+        return repositorio.actualizar(n);
+    }
+
     public boolean eliminar(int idNovedad) throws SQLException {
         return repositorio.eliminar(idNovedad);
     }

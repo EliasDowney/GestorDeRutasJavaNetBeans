@@ -2,7 +2,7 @@ package Model;
 
 import java.time.LocalDate;
 
-public abstract class NovedadModel {
+public class NovedadModel {
 
     private int idNovedad;
     private String descripcion;

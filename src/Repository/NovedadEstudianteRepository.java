@@ -49,6 +49,51 @@ public class NovedadEstudianteRepository {
         return lista;
     }
 
+    public NovedadEstudianteModel buscarPorId(int idNovedad) throws SQLException {
+        String sql = "SELECT n.*, ne.id_estudiante, ne.id_ruta FROM novedad_estudiante ne "
+                + "JOIN novedad n ON n.id_novedad = ne.id_novedad WHERE n.id_novedad=?";
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idNovedad);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new NovedadEstudianteModel(rs.getInt("id_novedad"), rs.getString("descripcion"),
+                            rs.getDate("fecha").toLocalDate(), rs.getString("estado"), rs.getString("categoria"),
+                            rs.getInt("id_estudiante"), rs.getInt("id_ruta"));
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean actualizar(NovedadEstudianteModel n) throws SQLException {
+        try (Connection con = Conexion.conectar()) {
+            con.setAutoCommit(false);
+            try {
+                String sql1 = "UPDATE novedad SET descripcion=?, fecha=?, estado=?, categoria=? WHERE id_novedad=?";
+                try (PreparedStatement ps = con.prepareStatement(sql1)) {
+                    ps.setString(1, n.getDescripcion());
+                    ps.setDate(2, java.sql.Date.valueOf(n.getFecha()));
+                    ps.setString(3, n.getEstado());
+                    ps.setString(4, n.getCategoria());
+                    ps.setInt(5, n.getIdNovedad());
+                    ps.executeUpdate();
+                }
+                String sql2 = "UPDATE novedad_estudiante SET id_estudiante=?, id_ruta=? WHERE id_novedad=?";
+                try (PreparedStatement ps = con.prepareStatement(sql2)) {
+                    ps.setInt(1, n.getIdEstudiante());
+                    ps.setInt(2, n.getIdRuta());
+                    ps.setInt(3, n.getIdNovedad());
+                    ps.executeUpdate();
+                }
+                con.commit();
+                return true;
+            } catch (SQLException e) {
+                con.rollback();
+                throw e;
+            }
+        }
+    }
+
     public boolean eliminar(int idNovedad) throws SQLException {
         try (Connection con = Conexion.conectar()) {
             con.setAutoCommit(false);
