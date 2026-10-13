@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NovedadRepository {
 
@@ -44,6 +46,47 @@ public class NovedadRepository {
         try (Connection con = Conexion.conectar()) {
             return eliminar(con, idNovedad);
         }
+    }
+
+    public List<NovedadModel> listar() throws SQLException {
+        List<NovedadModel> lista = new ArrayList<>();
+        String sql = "SELECT * FROM novedad";
+        try (Connection con = Conexion.conectar(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                lista.add(fila(rs));
+            }
+        }
+        return lista;
+    }
+
+    public NovedadModel buscarPorId(int idNovedad) throws SQLException {
+        String sql = "SELECT * FROM novedad WHERE id_novedad=?";
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idNovedad);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return fila(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean actualizar(NovedadModel n) throws SQLException {
+        String sql = "UPDATE novedad SET descripcion=?, fecha=?, estado=?, categoria=? WHERE id_novedad=?";
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, n.getDescripcion());
+            ps.setDate(2, java.sql.Date.valueOf(n.getFecha()));
+            ps.setString(3, n.getEstado());
+            ps.setString(4, n.getCategoria());
+            ps.setInt(5, n.getIdNovedad());
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    private NovedadModel fila(ResultSet rs) throws SQLException {
+        return new NovedadModel(rs.getInt("id_novedad"), rs.getString("descripcion"),
+                rs.getDate("fecha").toLocalDate(), rs.getString("estado"), rs.getString("categoria"));
     }
 
 }
