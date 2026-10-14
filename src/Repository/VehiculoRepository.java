@@ -30,7 +30,7 @@ public class VehiculoRepository {
     public List<VehiculoModel> listar() throws SQLException {
         List<VehiculoModel> lista = new ArrayList<>();
         String sql = "SELECT * FROM vehiculo";
-        try (Connection con = Conexion.conectar(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(fila(rs));
             }

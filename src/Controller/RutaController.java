@@ -23,6 +23,34 @@ public class RutaController {
         return servicio.listar();
     }
 
+    public RutaModel buscarPorId(int id) throws SQLException {
+        return servicio.buscarPorId(id);
+    }
+
+    public int guardar(RutaModel ruta) throws SQLException {
+        return servicio.guardar(ruta);
+    }
+
+    public boolean actualizar(RutaModel ruta) throws SQLException {
+        return servicio.actualizar(ruta);
+    }
+
+    public boolean eliminar(int id) throws SQLException {
+        return servicio.eliminar(id);
+    }
+
+    public List<ConductorModel> listarConductores() throws SQLException {
+        return conductorServicio.listar();
+    }
+
+    public List<CoordinadorModel> listarCoordinadores() throws SQLException {
+        return coordinadorServicio.listar();
+    }
+
+    public List<VehiculoModel> listarVehiculos() throws SQLException {
+        return vehiculoServicio.listar();
+    }
+
     public List<EstudianteModel> listarAsignados(int idRuta) throws SQLException {
         return servicio.listarAsignados(idRuta);
     }
