@@ -1,6 +1,7 @@
 package View;
 
-import Controller.NovedadController;
+import Controller.NovedadEstudianteController;
+import Controller.NovedadVehiculoController;
 import Model.ConductorModel;
 import Model.EstudianteModel;
 import Model.NovedadEstudianteModel;
@@ -37,7 +38,8 @@ import javax.swing.table.DefaultTableModel;
 
 public class NovedadesVista extends JFrame {
 
-    private final NovedadController controlador = new NovedadController();
+    private final NovedadEstudianteController controladorEstudiante = new NovedadEstudianteController();
+    private final NovedadVehiculoController controladorVehiculo = new NovedadVehiculoController();
 
     private final JComboBox<String> cmbTipo = new JComboBox<>(new String[]{"Estudiante", "Vehiculo"});
     private final JTextField txtDescripcion = new JTextField();
@@ -187,7 +189,7 @@ public class NovedadesVista extends JFrame {
         try {
             cmbEstudiante.removeAllItems();
             estudiantesMap.clear();
-            for (EstudianteModel e : controlador.listarEstudiantes()) {
+            for (EstudianteModel e : controladorEstudiante.listarEstudiantes()) {
                 estudiantesMap.put(e.getIdEstudiante(), e.getNombre() + " " + e.getApellido());
                 if ("ACTIVO".equalsIgnoreCase(e.getEstado())) {
                     cmbEstudiante.addItem(e);
@@ -195,7 +197,7 @@ public class NovedadesVista extends JFrame {
             }
             cmbVehiculo.removeAllItems();
             vehiculosMap.clear();
-            for (VehiculoModel v : controlador.listarVehiculos()) {
+            for (VehiculoModel v : controladorVehiculo.listarVehiculos()) {
                 vehiculosMap.put(v.getIdVehiculo(), v.getPlaca());
                 if ("ACTIVO".equalsIgnoreCase(v.getEstado())) {
                     cmbVehiculo.addItem(v);
@@ -203,7 +205,7 @@ public class NovedadesVista extends JFrame {
             }
             cmbConductor.removeAllItems();
             conductoresMap.clear();
-            for (ConductorModel c : controlador.listarConductores()) {
+            for (ConductorModel c : controladorVehiculo.listarConductores()) {
                 conductoresMap.put(c.getIdConductor(), c.getNombre() + " " + c.getApellido());
                 if ("ACTIVO".equalsIgnoreCase(c.getEstado())) {
                     cmbConductor.addItem(c);
@@ -212,7 +214,7 @@ public class NovedadesVista extends JFrame {
             cmbRutaEst.removeAllItems();
             cmbRutaVeh.removeAllItems();
             rutasMap.clear();
-            for (RutaModel r : controlador.listarRutas()) {
+            for (RutaModel r : controladorEstudiante.listarRutas()) {
                 rutasMap.put(r.getIdRuta(), r.getNombre());
                 if ("ACTIVO".equalsIgnoreCase(r.getEstado())) {
                     cmbRutaEst.addItem(r);
@@ -236,14 +238,14 @@ public class NovedadesVista extends JFrame {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
-            for (NovedadEstudianteModel n : controlador.listarNovedadesEstudiante()) {
+            for (NovedadEstudianteModel n : controladorEstudiante.listarNovedadesEstudiante()) {
                 filas.add(new Fila(n.getIdNovedad(), "ESTUDIANTE"));
                 modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Estudiante", n.getDescripcion(),
                     n.getFecha(), n.getEstado(),
                     estudiantesMap.getOrDefault(n.getIdEstudiante(), "?") + " / "
                     + rutasMap.getOrDefault(n.getIdRuta(), "-")});
             }
-            for (NovedadVehiculoModel n : controlador.listarNovedadesVehiculo()) {
+            for (NovedadVehiculoModel n : controladorVehiculo.listarNovedadesVehiculo()) {
                 filas.add(new Fila(n.getIdNovedad(), "VEHICULO"));
                 modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Vehiculo", n.getDescripcion(),
                     n.getFecha(), n.getEstado(),
@@ -283,7 +285,7 @@ public class NovedadesVista extends JFrame {
                     aviso("Seleccione el estudiante y la ruta.");
                     return;
                 }
-                controlador.guardarEstudiante(new NovedadEstudianteModel(0, descripcion, fecha, estado,
+                controladorEstudiante.guardarEstudiante(new NovedadEstudianteModel(0, descripcion, fecha, estado,
                         "ESTUDIANTE", e.getIdEstudiante(), r.getIdRuta()));
             } else {
                 VehiculoModel v = (VehiculoModel) cmbVehiculo.getSelectedItem();
@@ -293,7 +295,7 @@ public class NovedadesVista extends JFrame {
                     aviso("Seleccione el vehiculo, la ruta y el conductor.");
                     return;
                 }
-                controlador.guardarVehiculo(new NovedadVehiculoModel(0, descripcion, fecha, estado,
+                controladorVehiculo.guardarVehiculo(new NovedadVehiculoModel(0, descripcion, fecha, estado,
                         "VEHICULO", v.getIdVehiculo(), r.getIdRuta(), c.getIdConductor()));
             }
             JOptionPane.showMessageDialog(this, "Novedad registrada correctamente.",
@@ -318,9 +320,9 @@ public class NovedadesVista extends JFrame {
         }
         try {
             if ("ESTUDIANTE".equals(seleccion.categoria)) {
-                controlador.eliminarEstudiante(seleccion.id);
+                controladorEstudiante.eliminarEstudiante(seleccion.id);
             } else {
-                controlador.eliminarVehiculo(seleccion.id);
+                controladorVehiculo.eliminarVehiculo(seleccion.id);
             }
             cargarTabla();
         } catch (SQLException ex) {
