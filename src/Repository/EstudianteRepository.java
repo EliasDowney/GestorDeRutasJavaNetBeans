@@ -36,7 +36,7 @@ public class EstudianteRepository {
     public List<EstudianteModel> listar() throws SQLException {
         List<EstudianteModel> lista = new ArrayList<>();
         String sql = "SELECT * FROM estudiante";
-        try (Connection con = Conexion.conectar(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(fila(rs));
             }
@@ -99,7 +99,7 @@ public class EstudianteRepository {
     public List<EstudianteModel> listarSinRuta() throws SQLException {
         List<EstudianteModel> lista = new ArrayList<>();
         String sql = "SELECT * FROM estudiante WHERE id_ruta IS NULL";
-        try (Connection con = Conexion.conectar(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(fila(rs));
             }

@@ -5,27 +5,28 @@ import Service.NovedadEstudianteService;
 import java.sql.SQLException;
 import java.util.List;
 
-public class NovedadEstudianteController {
+public class NovedadEstudianteController extends NovedadController {
 
     private final NovedadEstudianteService servicio = new NovedadEstudianteService();
 
-    public boolean guardar(NovedadEstudianteModel n) throws SQLException {
+    public boolean guardarEstudiante(NovedadEstudianteModel n) throws SQLException {
         return servicio.guardar(n);
     }
 
-    public List<NovedadEstudianteModel> listar() throws SQLException {
+    public List<NovedadEstudianteModel> listarNovedadesEstudiante() throws SQLException {
         return servicio.listar();
     }
 
-    public NovedadEstudianteModel buscarPorId(int idNovedad) throws SQLException {
+    // Aportado en el PR #6 por el companero
+    public NovedadEstudianteModel buscarNovedadEstudiantePorId(int idNovedad) throws SQLException {
         return servicio.buscarPorId(idNovedad);
     }
 
-    public boolean actualizar(NovedadEstudianteModel n) throws SQLException {
+    public boolean actualizarNovedadEstudiante(NovedadEstudianteModel n) throws SQLException {
         return servicio.actualizar(n);
     }
 
-    public boolean eliminar(int idNovedad) throws SQLException {
+    public boolean eliminarEstudiante(int idNovedad) throws SQLException {
         return servicio.eliminar(idNovedad);
     }
 

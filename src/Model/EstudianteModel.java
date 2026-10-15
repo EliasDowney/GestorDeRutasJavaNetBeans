@@ -75,4 +75,9 @@ public class EstudianteModel extends UsuarioModel {
         return "Dirección: " + direccion;
     }
 
+    @Override
+    public String toString() {
+        return getNombre() + " " + getApellido() + " (" + getDocumento() + ")";
+    }
+
 }

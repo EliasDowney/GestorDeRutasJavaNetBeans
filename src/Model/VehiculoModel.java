@@ -47,5 +47,10 @@ public class VehiculoModel {
     public void setEstado(String estado) {
         this.estado = estado;
     }
-    
+
+    @Override
+    public String toString() {
+        return placa + " (capacidad: " + capacidad + ")";
+    }
+
 }

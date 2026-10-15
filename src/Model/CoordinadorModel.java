@@ -30,4 +30,9 @@ public class CoordinadorModel extends UsuarioModel {
         this.correo = correo;
     }
 
+    @Override
+    public String toString() {
+        return getNombre() + " " + getApellido();
+    }
+
 }

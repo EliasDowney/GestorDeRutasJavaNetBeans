@@ -52,12 +52,15 @@ public class RutasVista extends JFrame {
     private final JButton btnAsignar = new JButton("Asignar automaticamente");
     private final JButton btnQuitar = new JButton("Quitar seleccionado");
     private final JButton btnRefrescar = new JButton("Refrescar");
+    private final JButton btnNueva = new JButton("Nueva ruta");
+    private final JButton btnEditar = new JButton("Editar ruta");
+    private final JButton btnEstadoRuta = new JButton("Inactivar ruta");
     private List<EstudianteModel> asignados = new ArrayList<>();
     private boolean cargando;
 
     public RutasVista(AdministradorModel admin) {
         setTitle("Colegio La Divina Ruta - Asignacion de Rutas");
-        setSize(950, 580);
+        setSize(950, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -127,6 +130,22 @@ public class RutasVista extends JFrame {
         botones.add(btnRefrescar);
         botones.setAlignmentX(LEFT_ALIGNMENT);
 
+        JPanel gestion = new JPanel();
+        gestion.setBackground(Color.WHITE);
+        gestion.setLayout(new BoxLayout(gestion, BoxLayout.Y_AXIS));
+        gestion.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Tema.GRAY), " Administrar rutas "));
+        estiloBoton(btnNueva, Tema.NAVY, Color.WHITE);
+        estiloBoton(btnEditar, Tema.LIGHT, Color.BLACK);
+        estiloBoton(btnEstadoRuta, Tema.NAVY, Color.WHITE);
+        gestion.add(btnNueva);
+        gestion.add(Box.createVerticalStrut(8));
+        gestion.add(btnEditar);
+        gestion.add(Box.createVerticalStrut(8));
+        gestion.add(btnEstadoRuta);
+        gestion.setAlignmentX(LEFT_ALIGNMENT);
+        gestion.setMaximumSize(new Dimension(310, 150));
+
         izquierda.add(lblRuta);
         izquierda.add(Box.createVerticalStrut(6));
         izquierda.add(comboRutas);
@@ -134,6 +153,8 @@ public class RutasVista extends JFrame {
         izquierda.add(info);
         izquierda.add(Box.createVerticalStrut(12));
         izquierda.add(botones);
+        izquierda.add(Box.createVerticalStrut(12));
+        izquierda.add(gestion);
         centro.add(izquierda, BorderLayout.WEST);
 
         JPanel derecha = new JPanel(new BorderLayout(0, 8));
@@ -171,6 +192,9 @@ public class RutasVista extends JFrame {
         btnAsignar.addActionListener(e -> accionAsignar());
         btnQuitar.addActionListener(e -> accionQuitar());
         btnRefrescar.addActionListener(e -> cargarRutas());
+        btnNueva.addActionListener(e -> accionNuevaRuta());
+        btnEditar.addActionListener(e -> accionEditarRuta());
+        btnEstadoRuta.addActionListener(e -> accionCambiarEstadoRuta());
         btnVolver.addActionListener(e -> dispose());
 
         cargarRutas();
@@ -208,7 +232,8 @@ public class RutasVista extends JFrame {
                 asignados = new ArrayList<>();
                 return;
             }
-            btnAsignar.setEnabled(true);
+            boolean activa = "ACTIVO".equalsIgnoreCase(ruta.getEstado());
+            btnAsignar.setEnabled(activa);
             btnQuitar.setEnabled(true);
 
             lblConductor.setText(controlador.datosConductor(ruta.getIdConductor()));
@@ -216,6 +241,7 @@ public class RutasVista extends JFrame {
             lblCoordinador.setText(controlador.datosCoordinador(ruta.getIdCoordinador()));
             lblHorario.setText(ruta.getHoraSalida() + " - " + ruta.getHoraFinal());
             lblEstado.setText(ruta.getEstado());
+            btnEstadoRuta.setText("ACTIVO".equalsIgnoreCase(ruta.getEstado()) ? "Inactivar ruta" : "Activar ruta");
 
             asignados = controlador.listarAsignados(ruta.getIdRuta());
             int cupo = controlador.capacidad(ruta.getIdVehiculo());
@@ -239,7 +265,11 @@ public class RutasVista extends JFrame {
         }
         try {
             int n = controlador.asignarAutomatica(ruta);
-            if (n > 0) {
+            if (n < 0) {
+                JOptionPane.showMessageDialog(this,
+                        "La ruta esta inactiva. Actívela para poder asignar estudiantes.",
+                        "Asignacion automatica", JOptionPane.WARNING_MESSAGE);
+            } else if (n > 0) {
                 JOptionPane.showMessageDialog(this,
                         "Se asignaron " + n + " estudiantes a la ruta\n" + ruta.getNombre(),
                         "Asignacion automatica", JOptionPane.INFORMATION_MESSAGE);
@@ -268,6 +298,54 @@ public class RutasVista extends JFrame {
         } catch (SQLException ex) {
             fallo(ex);
         }
+    }
+
+    private void accionNuevaRuta() {
+        RutaFormulario formulario = new RutaFormulario(this, controlador, null);
+        formulario.setVisible(true);
+        if (formulario.isGuardado()) {
+            cargarRutas();
+        }
+    }
+
+    private void accionEditarRuta() {
+        RutaModel ruta = (RutaModel) comboRutas.getSelectedItem();
+        if (ruta == null) {
+            aviso("Seleccione una ruta para editarla.");
+            return;
+        }
+        RutaFormulario formulario = new RutaFormulario(this, controlador, ruta);
+        formulario.setVisible(true);
+        if (formulario.isGuardado()) {
+            cargarRutas();
+        }
+    }
+
+    private void accionCambiarEstadoRuta() {
+        RutaModel ruta = (RutaModel) comboRutas.getSelectedItem();
+        if (ruta == null) {
+            aviso("Seleccione una ruta.");
+            return;
+        }
+        boolean activo = "ACTIVO".equalsIgnoreCase(ruta.getEstado());
+        String accion = activo ? "inactivar" : "activar";
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "¿Desea " + accion + " la ruta " + ruta.getNombre() + "?",
+                "Cambiar estado", JOptionPane.YES_NO_OPTION);
+        if (opcion != JOptionPane.YES_OPTION) {
+            return;
+        }
+        ruta.setEstado(activo ? "INACTIVO" : "ACTIVO");
+        try {
+            controlador.actualizar(ruta);
+            cargarRutas();
+        } catch (SQLException ex) {
+            fallo(ex);
+        }
+    }
+
+    private void aviso(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Rutas", JOptionPane.WARNING_MESSAGE);
     }
 
     private void fallo(SQLException ex) {

@@ -67,10 +67,19 @@ public class RutaService {
     }
 
     public List<EstudianteModel> listarPendientes() throws SQLException {
-        return estudianteRepositorio.listarSinRuta();
+        List<EstudianteModel> pendientes = new ArrayList<>();
+        for (EstudianteModel e : estudianteRepositorio.listarSinRuta()) {
+            if ("ACTIVO".equalsIgnoreCase(e.getEstado())) {
+                pendientes.add(e);
+            }
+        }
+        return pendientes;
     }
 
     public int asignarAutomatica(RutaModel ruta) throws SQLException {
+        if (!"ACTIVO".equalsIgnoreCase(ruta.getEstado())) {
+            return -1;
+        }
         VehiculoModel vehiculo = new VehiculoRepository().buscarPorId(ruta.getIdVehiculo());
         if (vehiculo == null) {
             return 0;
@@ -79,7 +88,7 @@ public class RutaService {
         if (libres <= 0) {
             return 0;
         }
-        List<EstudianteModel> nuevos = asignarEstudiantes(estudianteRepositorio.listarSinRuta(), libres);
+        List<EstudianteModel> nuevos = asignarEstudiantes(listarPendientes(), libres);
         for (EstudianteModel e : nuevos) {
             estudianteRepositorio.asignarRuta(e.getIdEstudiante(), ruta.getIdRuta());
         }

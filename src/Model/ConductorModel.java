@@ -30,4 +30,9 @@ public class ConductorModel extends UsuarioModel {
         this.licencia = licencia;
     }
 
+    @Override
+    public String toString() {
+        return getNombre() + " " + getApellido();
+    }
+
 }

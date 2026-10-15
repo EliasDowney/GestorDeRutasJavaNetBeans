@@ -120,7 +120,7 @@ public class LoginVista extends JDialog {
             if (controlador.iniciarSesion(documento, clave)) {
                 AdministradorModel admin = controlador.obtenerAdministrador(documento);
                 dispose();
-                new RutasVista(admin).setVisible(true);
+                new AdminVista(admin).setVisible(true);
             } else {
                 estado.setText("Documento o clave incorrectos");
             }
