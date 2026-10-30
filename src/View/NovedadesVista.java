@@ -167,7 +167,7 @@ public class NovedadesVista extends JFrame {
         footer.setBackground(Tema.LIGHT);
         JButton btnVolver = new JButton("Volver al menu");
         estiloBoton(btnVolver, Tema.NAVY, Color.WHITE);
-        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta - Javier Cicuamia");
+        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta");
         copyright.setForeground(Tema.GRAY);
         copyright.setFont(Tema.fuente(Font.PLAIN, 12));
         footer.add(btnVolver);

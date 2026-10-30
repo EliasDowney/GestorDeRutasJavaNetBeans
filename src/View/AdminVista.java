@@ -63,7 +63,7 @@ public class AdminVista extends JFrame {
         JButton btnSalirApp = new JButton("Salir de la aplicacion");
         estiloBoton(btnSalirApp, Tema.NAVY, Color.WHITE);
         btnSalirApp.addActionListener(e -> salir());
-        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta - Javier Cicuamia");
+        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta");
         copyright.setForeground(Tema.GRAY);
         copyright.setFont(Tema.fuente(Font.PLAIN, 12));
         footer.add(btnSalirApp);
