@@ -49,7 +49,7 @@ public class PrincipalVista extends JFrame {
         btnSalir.setFocusPainted(false);
         btnSalir.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnSalir.addActionListener(e -> salir());
-        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta - Javier Cicuamia");
+        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta ");
         copyright.setForeground(Tema.GRAY);
         copyright.setFont(Tema.fuente(Font.PLAIN, 12));
         footer.add(btnSalir);
@@ -83,7 +83,6 @@ public class PrincipalVista extends JFrame {
         JPanel navegacion = new JPanel(new FlowLayout(FlowLayout.CENTER, 6, 6));
         navegacion.setBackground(new Color(6, 32, 58));
         JButton btnInicio = crearNav("Inicio");
-        JButton btnRutas = crearNav("Rutas");
         JButton btnQuienes = crearNav("Quienes somos");
         JButton btnServicios = crearNav("Servicios");
         JButton btnContacto = crearNav("Contactenos");
@@ -96,10 +95,8 @@ public class PrincipalVista extends JFrame {
         btnQuienes.addActionListener(e -> mostrarTarjeta("quienes"));
         btnServicios.addActionListener(e -> mostrarTarjeta("servicios"));
         btnContacto.addActionListener(e -> mostrarTarjeta("contacto"));
-        btnRutas.addActionListener(e -> abrirRutas());
 
         navegacion.add(btnInicio);
-        navegacion.add(btnRutas);
         navegacion.add(btnQuienes);
         navegacion.add(btnServicios);
         navegacion.add(btnContacto);

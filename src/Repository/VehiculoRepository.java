@@ -50,6 +50,8 @@ public class VehiculoRepository {
         }
         return null;
     }
+    
+     
 
     public boolean actualizar(VehiculoModel v) throws SQLException {
         String sql = "UPDATE vehiculo SET placa=?, capacidad=?, estado=? WHERE id_vehiculo=?";

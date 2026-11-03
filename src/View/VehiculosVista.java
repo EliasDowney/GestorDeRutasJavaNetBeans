@@ -1,5 +1,6 @@
 package View;
 
+import Exepcion.Exepcionv;
 import Controller.VehiculoController;
 import Model.VehiculoModel;
 import java.awt.BorderLayout;
@@ -117,7 +118,7 @@ public class VehiculosVista extends JFrame {
         footer.setBackground(Tema.LIGHT);
         JButton btnVolver = new JButton("Volver al menu");
         estiloBoton(btnVolver, Tema.NAVY, Color.WHITE);
-        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta - Javier Cicuamia");
+        JLabel copyright = new JLabel("© 2026 Colegio La Divina Ruta");
         copyright.setForeground(Tema.GRAY);
         copyright.setFont(Tema.fuente(Font.PLAIN, 12));
         footer.add(btnVolver);
@@ -176,6 +177,8 @@ public class VehiculosVista extends JFrame {
             JOptionPane.showMessageDialog(this, "Vehiculo registrado correctamente.",
                     "Vehiculos", JOptionPane.INFORMATION_MESSAGE);
             cargarTabla();
+        }catch (Exepcionv Placarepetida){
+            aviso(Placarepetida.getMessage());
         } catch (SQLException ex) {
             fallo(ex);
         }
@@ -195,6 +198,8 @@ public class VehiculosVista extends JFrame {
             JOptionPane.showMessageDialog(this, "Vehiculo actualizado.",
                     "Vehiculos", JOptionPane.INFORMATION_MESSAGE);
             cargarTabla();
+        } catch (Exepcionv Placarepetida)   {
+            aviso(Placarepetida.getMessage());
         } catch (SQLException ex) {
             fallo(ex);
         }
@@ -219,6 +224,10 @@ public class VehiculosVista extends JFrame {
         try {
             controlador.actualizar(v);
             cargarTabla();
+            
+        } catch (Exepcionv Placarepetida) {
+            aviso(Placarepetida.getMessage());
+           
         } catch (SQLException ex) {
             fallo(ex);
         }

@@ -1,15 +1,17 @@
 package Controller;
 
+import Exepcion.Exepcionv;
 import Model.VehiculoModel;
 import Service.VehiculoService;
 import java.sql.SQLException;
 import java.util.List;
 
+
 public class VehiculoController {
 
     private final VehiculoService servicio = new VehiculoService();
 
-    public int guardar(VehiculoModel v) throws SQLException {
+    public int guardar(VehiculoModel v) throws SQLException,Exepcionv {
         return servicio.guardar(v);
     }
 
@@ -21,7 +23,7 @@ public class VehiculoController {
         return servicio.buscarPorId(id);
     }
 
-    public boolean actualizar(VehiculoModel v) throws SQLException {
+    public boolean actualizar(VehiculoModel v) throws SQLException, Exepcionv {
         return servicio.actualizar(v);
     }
 
