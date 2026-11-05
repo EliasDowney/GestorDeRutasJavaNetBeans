@@ -28,5 +28,7 @@ public class NovedadService {
     public boolean eliminar(int idNovedad) throws SQLException {
         return repositorio.eliminar(idNovedad);
     }
-
+    public boolean actualizarEstado(int idNovedad, String estado) throws SQLException {
+    return repositorio.actualizarEstado(idNovedad, estado);
+}
 }

@@ -58,5 +58,8 @@ public abstract class NovedadController {
     public List<RutaModel> listarRutas() throws SQLException {
         return rutas.listar();
     }
+    public boolean actualizarEstado(int idNovedad, String estado) throws SQLException {
+    return novedadServicio.actualizarEstado(idNovedad, estado);
+}
 
 }

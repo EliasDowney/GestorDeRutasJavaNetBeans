@@ -46,6 +46,11 @@ public class NovedadesVista extends JFrame {
     private final JTextField txtFecha = new JTextField();
     private final JComboBox<String> cmbEstado = new JComboBox<>(new String[]{"PENDIENTE", "EN PROCESO", "RESUELTA"});
 
+    private final JComboBox<String> cmbFiltroTipo = new JComboBox<>(new String[]{"Todos", "Estudiante", "Vehiculo"});
+    private final JComboBox<String> cmbFiltroEstado = new JComboBox<>(new String[]{"Todos", "PENDIENTE", "EN PROCESO", "RESUELTA"});
+    private final JTextField txtBuscar = new JTextField();
+    private final JLabel LabelResultados = new JLabel(" ");
+
     private final JComboBox<EstudianteModel> cmbEstudiante = new JComboBox<>();
     private final JComboBox<RutaModel> cmbRutaEst = new JComboBox<>();
     private final JComboBox<VehiculoModel> cmbVehiculo = new JComboBox<>();
@@ -122,7 +127,6 @@ public class NovedadesVista extends JFrame {
         formulario.add(crearCampo("Tipo:", cmbTipo));
         formulario.add(crearCampo("Descripcion:", txtDescripcion));
         formulario.add(crearCampo("Fecha (AAAA-MM-DD):", txtFecha));
-        formulario.add(crearCampo("Estado:", cmbEstado));
 
         panelEstudiante = new JPanel();
         panelEstudiante.setBackground(Color.WHITE);
@@ -153,6 +157,23 @@ public class NovedadesVista extends JFrame {
         botones.add(btnLimpiar);
         botones.setAlignmentX(LEFT_ALIGNMENT);
         formulario.add(botones);
+
+        JPanel botonesEstado = new JPanel();
+        botonesEstado.setBackground(Color.WHITE);
+        botonesEstado.setLayout(new FlowLayout(FlowLayout.LEFT, 8, 8));
+        botonesEstado.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Tema.GRAY), " Cambiar estado de la novedad seleccionada "));
+        JLabel lblNuevoEstado = new JLabel("Nuevo estado:");
+        lblNuevoEstado.setFont(Tema.fuente(Font.PLAIN, 13));
+        cmbEstado.setPreferredSize(new Dimension(120, 26));
+        JButton btnCambiarEstado = new JButton("Cambiar estado");
+        estiloBoton(btnCambiarEstado, Tema.NAVY, Color.WHITE);
+        botonesEstado.add(lblNuevoEstado);
+        botonesEstado.add(cmbEstado);
+        botonesEstado.add(btnCambiarEstado);
+        botonesEstado.setMaximumSize(new Dimension(420, 80));
+        botonesEstado.setAlignmentX(LEFT_ALIGNMENT);
+        formulario.add(botonesEstado);
         formulario.add(Box.createVerticalGlue());
 
         centro.add(formulario, BorderLayout.WEST);
@@ -161,7 +182,56 @@ public class NovedadesVista extends JFrame {
         tabla.setRowHeight(24);
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tabla.getTableHeader().setFont(Tema.fuente(Font.BOLD, 13));
-        centro.add(new JScrollPane(tabla), BorderLayout.CENTER);
+
+        JPanel panelFiltros = new JPanel();
+        panelFiltros.setLayout(new BoxLayout(panelFiltros, BoxLayout.Y_AXIS));
+        panelFiltros.setBackground(Color.WHITE);
+        panelFiltros.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Tema.GRAY), " Filtrar novedades "));
+
+        JLabel LabelTIpo = new JLabel("Tipo:");
+        JLabel LabelEstado = new JLabel("Estado:");
+        JLabel LabelBuscar = new JLabel("Buscar:");
+
+        LabelTIpo.setFont(Tema.fuente(Font.PLAIN, 13));
+        LabelEstado.setFont(Tema.fuente(Font.PLAIN, 13));
+        LabelBuscar.setFont(Tema.fuente(Font.PLAIN, 13));
+
+        LabelResultados.setFont(Tema.fuente(Font.ITALIC, 12));
+        LabelResultados.setForeground(Tema.GRAY);
+
+        txtBuscar.setPreferredSize(new Dimension(130, 26));
+
+        JButton botonFiltrar = new JButton("Filtrar");
+        JButton botonQuitarFiltro = new JButton("Quitar filtro");
+        estiloBoton(botonFiltrar, Tema.GOLD, Color.BLACK);
+        estiloBoton(botonQuitarFiltro, Tema.LIGHT, Color.BLACK);
+
+        JPanel filaFiltro1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        filaFiltro1.setBackground(Color.WHITE);
+        filaFiltro1.setAlignmentX(LEFT_ALIGNMENT);
+        filaFiltro1.add(LabelTIpo);
+        filaFiltro1.add(cmbFiltroTipo);
+        filaFiltro1.add(LabelEstado);
+        filaFiltro1.add(cmbFiltroEstado);
+        filaFiltro1.add(LabelBuscar);
+        filaFiltro1.add(txtBuscar);
+
+        JPanel filaFiltro2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 4));
+        filaFiltro2.setBackground(Color.WHITE);
+        filaFiltro2.setAlignmentX(LEFT_ALIGNMENT);
+        filaFiltro2.add(botonFiltrar);
+        filaFiltro2.add(botonQuitarFiltro);
+        filaFiltro2.add(LabelResultados);
+
+        panelFiltros.add(filaFiltro1);
+        panelFiltros.add(filaFiltro2);
+
+        JPanel panelTabla = new JPanel(new BorderLayout(0, 8));
+        panelTabla.setBackground(Color.WHITE);
+        panelTabla.add(panelFiltros, BorderLayout.NORTH);
+        panelTabla.add(new JScrollPane(tabla), BorderLayout.CENTER);
+        centro.add(panelTabla, BorderLayout.CENTER);
 
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 8));
         footer.setBackground(Tema.LIGHT);
@@ -177,8 +247,15 @@ public class NovedadesVista extends JFrame {
         btnGuardar.addActionListener(e -> accionGuardar());
         btnEliminar.addActionListener(e -> accionEliminar());
         btnLimpiar.addActionListener(e -> limpiarFormulario());
+        btnCambiarEstado.addActionListener(e -> accionCambiarEstado());
         btnVolver.addActionListener(e -> dispose());
         cmbTipo.addActionListener(e -> actualizarPaneles());
+
+        botonFiltrar.addActionListener(e -> llenarTabla());
+        txtBuscar.addActionListener(e -> llenarTabla());
+        cmbFiltroTipo.addActionListener(e -> llenarTabla());
+        cmbFiltroEstado.addActionListener(e -> llenarTabla());
+        botonQuitarFiltro.addActionListener(e -> quitarFiltro());
 
         cargarCombos();
         actualizarPaneles();
@@ -235,27 +312,65 @@ public class NovedadesVista extends JFrame {
     }
 
     private void cargarTabla() {
+        llenarTabla();
+        limpiarFormulario();
+    }
+
+    private void llenarTabla() {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
+            int total = 0;
             for (NovedadEstudianteModel n : controladorEstudiante.listarNovedadesEstudiante()) {
-                filas.add(new Fila(n.getIdNovedad(), "ESTUDIANTE"));
-                modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Estudiante", n.getDescripcion(),
-                    n.getFecha(), n.getEstado(),
-                    estudiantesMap.getOrDefault(n.getIdEstudiante(), "?") + " / "
-                    + rutasMap.getOrDefault(n.getIdRuta(), "-")});
+                total++;
+                String asociado = estudiantesMap.getOrDefault(n.getIdEstudiante(), "?") + " / "
+                        + rutasMap.getOrDefault(n.getIdRuta(), "-");
+                if (pasaFiltro("Estudiante", n.getDescripcion(), String.valueOf(n.getFecha()), n.getEstado(), asociado)) {
+                    filas.add(new Fila(n.getIdNovedad(), "ESTUDIANTE"));
+                    modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Estudiante", n.getDescripcion(),
+                        n.getFecha(), n.getEstado(), asociado});
+                }
             }
             for (NovedadVehiculoModel n : controladorVehiculo.listarNovedadesVehiculo()) {
-                filas.add(new Fila(n.getIdNovedad(), "VEHICULO"));
-                modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Vehiculo", n.getDescripcion(),
-                    n.getFecha(), n.getEstado(),
-                    vehiculosMap.getOrDefault(n.getIdVehiculo(), "?") + " / "
-                    + conductoresMap.getOrDefault(n.getIdConductor(), "-")});
+                total++;
+                String asociado = vehiculosMap.getOrDefault(n.getIdVehiculo(), "?") + " / "
+                        + conductoresMap.getOrDefault(n.getIdConductor(), "-");
+                if (pasaFiltro("Vehiculo", n.getDescripcion(), String.valueOf(n.getFecha()), n.getEstado(), asociado)) {
+                    filas.add(new Fila(n.getIdNovedad(), "VEHICULO"));
+                    modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Vehiculo", n.getDescripcion(),
+                        n.getFecha(), n.getEstado(), asociado});
+                }
             }
-            limpiarFormulario();
+            LabelResultados.setText(modeloTabla.getRowCount() + " de " + total + " novedades");
         } catch (SQLException ex) {
             fallo(ex);
         }
+    }
+
+    private boolean pasaFiltro(String tipo, String descripcion, String fecha, String estado, String asociado) {
+        String filtroTipo = (String) cmbFiltroTipo.getSelectedItem();
+        if (filtroTipo != null && !"Todos".equals(filtroTipo) && !filtroTipo.equals(tipo)) {
+            return false;
+        }
+        String filtroEstado = (String) cmbFiltroEstado.getSelectedItem();
+        if (filtroEstado != null && !"Todos".equals(filtroEstado) && !filtroEstado.equalsIgnoreCase(estado)) {
+            return false;
+        }
+        String texto = txtBuscar.getText().trim().toLowerCase();
+        if (!texto.isEmpty()) {
+            String todo = (descripcion + " " + fecha + " " + asociado).toLowerCase();
+            if (!todo.contains(texto)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void quitarFiltro() {
+        cmbFiltroTipo.setSelectedIndex(0);
+        cmbFiltroEstado.setSelectedIndex(0);
+        txtBuscar.setText("");
+        llenarTabla();
     }
 
     private void accionGuardar() {
@@ -276,7 +391,7 @@ public class NovedadesVista extends JFrame {
                 return;
             }
         }
-        String estado = (String) cmbEstado.getSelectedItem();
+        String estado = "PENDIENTE";
         try {
             if ("Estudiante".equals(cmbTipo.getSelectedItem())) {
                 EstudianteModel e = (EstudianteModel) cmbEstudiante.getSelectedItem();
@@ -324,6 +439,29 @@ public class NovedadesVista extends JFrame {
             } else {
                 controladorVehiculo.eliminarVehiculo(seleccion.id);
             }
+            cargarTabla();
+        } catch (SQLException ex) {
+            fallo(ex);
+        }
+    }
+
+    private void accionCambiarEstado() {
+        int fila = tabla.getSelectedRow();
+        if (fila < 0) {
+            aviso("Seleccione una novedad de la tabla para cambiarle el estado.");
+            return;
+        }
+        Fila seleccion = filas.get(fila);
+        String nuevoEstado = (String) cmbEstado.getSelectedItem();
+        String estadoActual = String.valueOf(modeloTabla.getValueAt(fila, 4));
+        if (nuevoEstado.equalsIgnoreCase(estadoActual)) {
+            aviso("La novedad ya esta en estado " + nuevoEstado + ".");
+            return;
+        }
+        try {
+            controladorEstudiante.actualizarEstado(seleccion.id, nuevoEstado);
+            JOptionPane.showMessageDialog(this, "Estado actualizado a " + nuevoEstado + ".",
+                    "Novedades", JOptionPane.INFORMATION_MESSAGE);
             cargarTabla();
         } catch (SQLException ex) {
             fallo(ex);
