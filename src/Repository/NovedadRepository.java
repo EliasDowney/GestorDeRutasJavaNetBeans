@@ -84,6 +84,16 @@ public class NovedadRepository {
         }
     }
 
+    public boolean actualizarEstado(int idNovedad, String estado) throws SQLException{ 
+            String sql = "UPDATE novedad SET estado=? WHERE id_novedad=?";
+            try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)){
+                ps.setString(1, estado);
+                   ps.setInt(2, idNovedad);
+                return ps.executeUpdate() > 0;
+            }
+
+    }  
+    
     private NovedadModel fila(ResultSet rs) throws SQLException {
         return new NovedadModel(rs.getInt("id_novedad"), rs.getString("descripcion"),
                 rs.getDate("fecha").toLocalDate(), rs.getString("estado"), rs.getString("categoria"));
