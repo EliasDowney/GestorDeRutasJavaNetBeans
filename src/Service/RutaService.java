@@ -7,11 +7,13 @@ import Repository.EstudianteRepository;
 import Repository.RutaRepository;
 import Repository.VehiculoRepository;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class RutaService {
 
@@ -99,4 +101,30 @@ public class RutaService {
         return estudianteRepositorio.quitarRuta(idEstudiante);
     }
 
+    
+    public int cuposOcupados(RutaModel ruta) throws SQLException {
+    return estudianteRepositorio.listarPorRuta(ruta.getIdRuta()).size();
+}
+
+    public int cuposDisponibles(RutaModel ruta) throws SQLException {
+        VehiculoModel vehiculo = new VehiculoRepository().buscarPorId(ruta.getIdVehiculo());
+        if (vehiculo == null) {
+            return 0;
+        }
+        return Math.max(0, vehiculo.getCapacidad() - cuposOcupados(ruta));
+    }
+
+    public double porcentajeOcupacion(RutaModel ruta) throws SQLException {
+        VehiculoModel vehiculo = new VehiculoRepository().buscarPorId(ruta.getIdVehiculo());
+        if (vehiculo == null || vehiculo.getCapacidad() == 0) {
+            return 0;
+        }
+        return cuposOcupados(ruta) * 100.0 / vehiculo.getCapacidad();
+    }
+
+    public long duracionMinutos(RutaModel ruta) {
+        return Duration.between(ruta.getHoraSalida(), ruta.getHoraFinal()).toMinutes();
+    }
+    
+    
 }
