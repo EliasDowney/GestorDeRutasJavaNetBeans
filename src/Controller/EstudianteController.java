@@ -9,8 +9,8 @@ public class EstudianteController {
 
     private final EstudianteService servicio = new EstudianteService();
 
-    public int guardar(EstudianteModel e) throws SQLException {
-        return servicio.guardar(e);
+    public int guardar(EstudianteModel estudiante) throws SQLException {
+        return servicio.guardar(estudiante);
     }
 
     public List<EstudianteModel> listar() throws SQLException {
@@ -21,8 +21,8 @@ public class EstudianteController {
         return servicio.buscarPorId(id);
     }
 
-    public boolean actualizar(EstudianteModel e) throws SQLException {
-        return servicio.actualizar(e);
+    public boolean actualizar(EstudianteModel estudiante) throws SQLException {
+        return servicio.actualizar(estudiante);
     }
 
     public boolean eliminar(int id) throws SQLException {

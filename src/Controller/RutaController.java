@@ -68,23 +68,23 @@ public class RutaController {
     }
 
     public String datosConductor(int idConductor) throws SQLException {
-        ConductorModel c = conductorServicio.buscarPorId(idConductor);
-        return (c == null) ? "Sin conductor" : c.getNombre() + " " + c.getApellido();
+        ConductorModel conductor = conductorServicio.buscarPorId(idConductor);
+        return (conductor == null) ? "Sin conductor" : conductor.getNombre() + " " + conductor.getApellido();
     }
 
     public String datosCoordinador(int idCoordinador) throws SQLException {
-        CoordinadorModel c = coordinadorServicio.buscarPorId(idCoordinador);
-        return (c == null) ? "Sin coordinador" : c.getNombre() + " " + c.getApellido();
+        CoordinadorModel conductor = coordinadorServicio.buscarPorId(idCoordinador);
+        return (conductor == null) ? "Sin coordinador" : conductor.getNombre() + " " + conductor.getApellido();
     }
 
     public String datosVehiculo(int idVehiculo) throws SQLException {
-        VehiculoModel v = vehiculoServicio.buscarPorId(idVehiculo);
-        return (v == null) ? "Sin vehiculo" : v.getPlaca() + " (capacidad: " + v.getCapacidad() + ")";
+        VehiculoModel vehiculo = vehiculoServicio.buscarPorId(idVehiculo);
+        return (vehiculo == null) ? "Sin vehiculo" : vehiculo.getPlaca() + " (capacidad: " + vehiculo.getCapacidad() + ")";
     }
 
     public int capacidad(int idVehiculo) throws SQLException {
-        VehiculoModel v = vehiculoServicio.buscarPorId(idVehiculo);
-        return (v == null) ? 0 : v.getCapacidad();
+        VehiculoModel vehiculo = vehiculoServicio.buscarPorId(idVehiculo);
+        return (vehiculo == null) ? 0 : vehiculo.getCapacidad();
     }
 
 }

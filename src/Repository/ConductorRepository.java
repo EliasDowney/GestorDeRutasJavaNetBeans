@@ -11,19 +11,19 @@ import java.util.List;
 
 public class ConductorRepository {
 
-    public int guardar(ConductorModel c) throws SQLException {
+    public int guardar(ConductorModel conductor) throws SQLException {
         String sql = "INSERT INTO conductor (documento, nombre, apellido, telefono, licencia, estado) VALUES (?,?,?,?,?,?)";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, c.getDocumento());
-            ps.setString(2, c.getNombre());
-            ps.setString(3, c.getApellido());
-            ps.setString(4, c.getTelefono());
-            ps.setString(5, c.getLicencia());
-            ps.setString(6, c.getEstado());
+        try (Connection connection = Conexion.conectar(); PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, conductor.getDocumento());
+            ps.setString(2, conductor.getNombre());
+            ps.setString(3, conductor.getApellido());
+            ps.setString(4, conductor.getTelefono());
+            ps.setString(5, conductor.getLicencia());
+            ps.setString(6, conductor.getEstado());
             ps.executeUpdate();
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
+            try (ResultSet resultadoConsulta = ps.getGeneratedKeys()) {
+                if (resultadoConsulta.next()) {
+                    return resultadoConsulta.getInt(1);
                 }
             }
         }
@@ -33,9 +33,9 @@ public class ConductorRepository {
     public List<ConductorModel> listar() throws SQLException {
         List<ConductorModel> lista = new ArrayList<>();
         String sql = "SELECT * FROM conductor";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(fila(rs));
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql); ResultSet resultadoConsulta = ps.executeQuery()) {
+            while (resultadoConsulta.next()) {
+                lista.add(fila(resultadoConsulta));
             }
         }
         return lista;
@@ -43,43 +43,43 @@ public class ConductorRepository {
 
     public ConductorModel buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM conductor WHERE id_conductor=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return fila(rs);
+            try (ResultSet resultadoConsulta = ps.executeQuery()) {
+                if (resultadoConsulta.next()) {
+                    return fila(resultadoConsulta);
                 }
             }
         }
         return null;
     }
 
-    public boolean actualizar(ConductorModel c) throws SQLException {
+    public boolean actualizar(ConductorModel conductor) throws SQLException {
         String sql = "UPDATE conductor SET documento=?, nombre=?, apellido=?, telefono=?, licencia=?, estado=? WHERE id_conductor=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, c.getDocumento());
-            ps.setString(2, c.getNombre());
-            ps.setString(3, c.getApellido());
-            ps.setString(4, c.getTelefono());
-            ps.setString(5, c.getLicencia());
-            ps.setString(6, c.getEstado());
-            ps.setInt(7, c.getIdConductor());
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, conductor.getDocumento());
+            ps.setString(2, conductor.getNombre());
+            ps.setString(3, conductor.getApellido());
+            ps.setString(4, conductor.getTelefono());
+            ps.setString(5, conductor.getLicencia());
+            ps.setString(6, conductor.getEstado());
+            ps.setInt(7, conductor.getIdConductor());
             return ps.executeUpdate() > 0;
         }
     }
 
     public boolean eliminar(int id) throws SQLException {
         String sql = "DELETE FROM conductor WHERE id_conductor=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         }
     }
 
-    private ConductorModel fila(ResultSet rs) throws SQLException {
-        return new ConductorModel(rs.getInt("id_conductor"), rs.getString("licencia"),
-                rs.getString("documento"), rs.getString("nombre"), rs.getString("apellido"),
-                rs.getString("telefono"), rs.getString("estado"));
+    private ConductorModel fila(ResultSet resultadoConsulta) throws SQLException {
+        return new ConductorModel(resultadoConsulta.getInt("id_conductor"), resultadoConsulta.getString("licencia"),
+                resultadoConsulta.getString("documento"), resultadoConsulta.getString("nombre"), resultadoConsulta.getString("apellido"),
+                resultadoConsulta.getString("telefono"), resultadoConsulta.getString("estado"));
     }
 
 }

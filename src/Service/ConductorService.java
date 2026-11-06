@@ -9,8 +9,8 @@ public class ConductorService {
 
     private final ConductorRepository repositorio = new ConductorRepository();
 
-    public int guardar(ConductorModel c) throws SQLException {
-        return repositorio.guardar(c);
+    public int guardar(ConductorModel conductor) throws SQLException {
+        return repositorio.guardar(conductor);
     }
 
     public List<ConductorModel> listar() throws SQLException {
@@ -21,8 +21,8 @@ public class ConductorService {
         return repositorio.buscarPorId(id);
     }
 
-    public boolean actualizar(ConductorModel c) throws SQLException {
-        return repositorio.actualizar(c);
+    public boolean actualizar(ConductorModel conductor) throws SQLException {
+        return repositorio.actualizar(conductor);
     }
 
     public boolean eliminar(int id) throws SQLException {

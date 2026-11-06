@@ -9,8 +9,8 @@ public class NovedadService {
 
     private final NovedadRepository repositorio = new NovedadRepository();
 
-    public int insertarBase(NovedadModel n) throws SQLException {
-        return repositorio.insertarBase(n);
+    public int insertarBase(NovedadModel novedadService) throws SQLException {
+        return repositorio.insertarBase(novedadService);
     }
 
     public List<NovedadModel> listar() throws SQLException {
@@ -21,8 +21,8 @@ public class NovedadService {
         return repositorio.buscarPorId(idNovedad);
     }
 
-    public boolean actualizar(NovedadModel n) throws SQLException {
-        return repositorio.actualizar(n);
+    public boolean actualizar(NovedadModel novedadService) throws SQLException {
+        return repositorio.actualizar(novedadService);
     }
 
     public boolean eliminar(int idNovedad) throws SQLException {

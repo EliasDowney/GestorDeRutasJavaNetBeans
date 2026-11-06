@@ -131,10 +131,10 @@ public class CoordinadoresVista extends JFrame {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
-            for (CoordinadorModel c : controlador.listar()) {
-                filas.add(c);
-                modeloTabla.addRow(new Object[]{c.getDocumento(), c.getNombre(), c.getApellido(),
-                    c.getTelefono(), c.getCorreo(), c.getEstado()});
+            for (CoordinadorModel coordinador : controlador.listar()) {
+                filas.add(coordinador);
+                modeloTabla.addRow(new Object[]{coordinador.getDocumento(), coordinador.getNombre(), coordinador.getApellido(),
+                    coordinador.getTelefono(), coordinador.getCorreo(), coordinador.getEstado()});
             }
             limpiarFormulario();
         } catch (SQLException ex) {
@@ -147,15 +147,15 @@ public class CoordinadoresVista extends JFrame {
         if (fila < 0) {
             return;
         }
-        CoordinadorModel c = filas.get(fila);
-        idSeleccionado = c.getIdCoordinador();
-        txtDocumento.setText(c.getDocumento());
-        txtNombre.setText(c.getNombre());
-        txtApellido.setText(c.getApellido());
-        txtTelefono.setText(c.getTelefono());
-        txtCorreo.setText(c.getCorreo());
-        cmbEstado.setSelectedItem(c.getEstado());
-        btnEstado.setText("ACTIVO".equalsIgnoreCase(c.getEstado()) ? "Inactivar" : "Activar");
+        CoordinadorModel coordinador = filas.get(fila);
+        idSeleccionado = coordinador.getIdCoordinador();
+        txtDocumento.setText(coordinador.getDocumento());
+        txtNombre.setText(coordinador.getNombre());
+        txtApellido.setText(coordinador.getApellido());
+        txtTelefono.setText(coordinador.getTelefono());
+        txtCorreo.setText(coordinador.getCorreo());
+        cmbEstado.setSelectedItem(coordinador.getEstado());
+        btnEstado.setText("ACTIVO".equalsIgnoreCase(coordinador.getEstado()) ? "Inactivar" : "Activar");
     }
 
     private void accionGuardar() {
@@ -200,18 +200,18 @@ public class CoordinadoresVista extends JFrame {
             aviso("Seleccione un coordinador de la tabla.");
             return;
         }
-        CoordinadorModel c = filas.get(fila);
-        boolean activo = "ACTIVO".equalsIgnoreCase(c.getEstado());
+        CoordinadorModel coordinador = filas.get(fila);
+        boolean activo = "ACTIVO".equalsIgnoreCase(coordinador.getEstado());
         String accion = activo ? "inactivar" : "activar";
         int opcion = JOptionPane.showConfirmDialog(this,
-                "¿Desea " + accion + " al coordinador " + c.getNombre() + " " + c.getApellido() + "?",
+                "¿Desea " + accion + " al coordinador " + coordinador.getNombre() + " " + coordinador.getApellido() + "?",
                 "Cambiar estado", JOptionPane.YES_NO_OPTION);
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-        c.setEstado(activo ? "INACTIVO" : "ACTIVO");
+        coordinador.setEstado(activo ? "INACTIVO" : "ACTIVO");
         try {
-            controlador.actualizar(c);
+            controlador.actualizar(coordinador);
             cargarTabla();
         } catch (SQLException ex) {
             fallo(ex);

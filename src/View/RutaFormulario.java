@@ -93,9 +93,9 @@ public class RutaFormulario extends JDialog {
 
     private void cargarCombos() {
         try {
-            for (ConductorModel c : controlador.listarConductores()) {
-                if ("ACTIVO".equalsIgnoreCase(c.getEstado())) {
-                    cmbConductor.addItem(c);
+            for (ConductorModel conductor : controlador.listarConductores()) {
+                if ("ACTIVO".equalsIgnoreCase(conductor.getEstado())) {
+                    cmbConductor.addItem(conductor);
                 }
             }
             for (VehiculoModel v : controlador.listarVehiculos()) {
@@ -103,9 +103,9 @@ public class RutaFormulario extends JDialog {
                     cmbVehiculo.addItem(v);
                 }
             }
-            for (CoordinadorModel c : controlador.listarCoordinadores()) {
-                if ("ACTIVO".equalsIgnoreCase(c.getEstado())) {
-                    cmbCoordinador.addItem(c);
+            for (CoordinadorModel conductor : controlador.listarCoordinadores()) {
+                if ("ACTIVO".equalsIgnoreCase(conductor.getEstado())) {
+                    cmbCoordinador.addItem(conductor);
                 }
             }
         } catch (SQLException ex) {

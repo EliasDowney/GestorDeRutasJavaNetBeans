@@ -22,8 +22,8 @@ public abstract class NovedadController {
     private final RutaService rutas = new RutaService();
 
     // CRUD generico de Novedad (aportado en el PR #6 por el companero)
-    public int guardar(NovedadModel n) throws SQLException {
-        return novedadServicio.insertarBase(n);
+    public int guardar(NovedadModel novedad) throws SQLException {
+        return novedadServicio.insertarBase(novedad);
     }
 
     public List<NovedadModel> listar() throws SQLException {
@@ -34,8 +34,8 @@ public abstract class NovedadController {
         return novedadServicio.buscarPorId(idNovedad);
     }
 
-    public boolean actualizar(NovedadModel n) throws SQLException {
-        return novedadServicio.actualizar(n);
+    public boolean actualizar(NovedadModel novedad) throws SQLException {
+        return novedadServicio.actualizar(novedad);
     }
 
     public boolean eliminar(int idNovedad) throws SQLException {

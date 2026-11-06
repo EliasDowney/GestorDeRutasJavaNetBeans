@@ -9,8 +9,8 @@ public class NovedadEstudianteController extends NovedadController {
 
     private final NovedadEstudianteService servicio = new NovedadEstudianteService();
 
-    public boolean guardarEstudiante(NovedadEstudianteModel n) throws SQLException {
-        return servicio.guardar(n);
+    public boolean guardarEstudiante(NovedadEstudianteModel novedad) throws SQLException {
+        return servicio.guardar(novedad);
     }
 
     public List<NovedadEstudianteModel> listarNovedadesEstudiante() throws SQLException {
@@ -22,8 +22,8 @@ public class NovedadEstudianteController extends NovedadController {
         return servicio.buscarPorId(idNovedad);
     }
 
-    public boolean actualizarNovedadEstudiante(NovedadEstudianteModel n) throws SQLException {
-        return servicio.actualizar(n);
+    public boolean actualizarNovedadEstudiante(NovedadEstudianteModel novedad) throws SQLException {
+        return servicio.actualizar(novedad);
     }
 
     public boolean eliminarEstudiante(int idNovedad) throws SQLException {

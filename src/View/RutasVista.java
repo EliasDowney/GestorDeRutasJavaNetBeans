@@ -185,8 +185,8 @@ public class RutasVista extends JFrame {
         try {
             cargando = true;
             comboRutas.removeAllItems();
-            for (RutaModel r : controlador.listar()) {
-                comboRutas.addItem(r);
+            for (RutaModel ruta : controlador.listar()) {
+                comboRutas.addItem(ruta);
             }
             cargando = false;
             refrescarTabla();
@@ -227,9 +227,9 @@ public class RutasVista extends JFrame {
             asignados = controlador.listarAsignados(ruta.getIdRuta());
             int cupo = controlador.capacidad(ruta.getIdVehiculo());
             int n = 1;
-            for (EstudianteModel e : asignados) {
-                modeloTabla.addRow(new Object[]{n++, e.getNombre() + " " + e.getApellido(),
-                    e.getDocumento(), e.getGrado(), e.getDireccion()});
+            for (EstudianteModel estudiante : asignados) {
+                modeloTabla.addRow(new Object[]{n++, estudiante.getNombre() + " " + estudiante.getApellido(),
+                    estudiante.getDocumento(), estudiante.getGrado(), estudiante.getDireccion()});
             }
             lblCupo.setText("Asignados: " + asignados.size() + " de " + cupo + " lugares");
             int pendientes = controlador.listarPendientes().size();

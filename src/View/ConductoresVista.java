@@ -131,10 +131,10 @@ public class ConductoresVista extends JFrame {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
-            for (ConductorModel c : controlador.listar()) {
-                filas.add(c);
-                modeloTabla.addRow(new Object[]{c.getDocumento(), c.getNombre(), c.getApellido(),
-                    c.getTelefono(), c.getLicencia(), c.getEstado()});
+            for (ConductorModel conductor : controlador.listar()) {
+                filas.add(conductor);
+                modeloTabla.addRow(new Object[]{conductor.getDocumento(), conductor.getNombre(), conductor.getApellido(),
+                    conductor.getTelefono(), conductor.getLicencia(), conductor.getEstado()});
             }
             limpiarFormulario();
         } catch (SQLException ex) {
@@ -147,15 +147,15 @@ public class ConductoresVista extends JFrame {
         if (fila < 0) {
             return;
         }
-        ConductorModel c = filas.get(fila);
-        idSeleccionado = c.getIdConductor();
-        txtDocumento.setText(c.getDocumento());
-        txtNombre.setText(c.getNombre());
-        txtApellido.setText(c.getApellido());
-        txtTelefono.setText(c.getTelefono());
-        txtLicencia.setText(c.getLicencia());
-        cmbEstado.setSelectedItem(c.getEstado());
-        btnEstado.setText("ACTIVO".equalsIgnoreCase(c.getEstado()) ? "Inactivar" : "Activar");
+        ConductorModel conductor = filas.get(fila);
+        idSeleccionado = conductor.getIdConductor();
+        txtDocumento.setText(conductor.getDocumento());
+        txtNombre.setText(conductor.getNombre());
+        txtApellido.setText(conductor.getApellido());
+        txtTelefono.setText(conductor.getTelefono());
+        txtLicencia.setText(conductor.getLicencia());
+        cmbEstado.setSelectedItem(conductor.getEstado());
+        btnEstado.setText("ACTIVO".equalsIgnoreCase(conductor.getEstado()) ? "Inactivar" : "Activar");
     }
 
     private void accionGuardar() {
@@ -200,18 +200,18 @@ public class ConductoresVista extends JFrame {
             aviso("Seleccione un conductor de la tabla.");
             return;
         }
-        ConductorModel c = filas.get(fila);
-        boolean activo = "ACTIVO".equalsIgnoreCase(c.getEstado());
+        ConductorModel conductor = filas.get(fila);
+        boolean activo = "ACTIVO".equalsIgnoreCase(conductor.getEstado());
         String accion = activo ? "inactivar" : "activar";
         int opcion = JOptionPane.showConfirmDialog(this,
-                "¿Desea " + accion + " al conductor " + c.getNombre() + " " + c.getApellido() + "?",
+                "¿Desea " + accion + " al conductor " + conductor.getNombre() + " " + conductor.getApellido() + "?",
                 "Cambiar estado", JOptionPane.YES_NO_OPTION);
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-        c.setEstado(activo ? "INACTIVO" : "ACTIVO");
+        conductor.setEstado(activo ? "INACTIVO" : "ACTIVO");
         try {
-            controlador.actualizar(c);
+            controlador.actualizar(conductor);
             cargarTabla();
         } catch (SQLException ex) {
             fallo(ex);

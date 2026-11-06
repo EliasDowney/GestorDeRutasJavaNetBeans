@@ -18,8 +18,8 @@ public class RutaService {
     private final RutaRepository repositorio = new RutaRepository();
     private final EstudianteRepository estudianteRepositorio = new EstudianteRepository();
 
-    public int guardar(RutaModel r) throws SQLException {
-        return repositorio.guardar(r);
+    public int guardar(RutaModel ruta) throws SQLException {
+        return repositorio.guardar(ruta);
     }
 
     public List<RutaModel> listar() throws SQLException {
@@ -30,8 +30,8 @@ public class RutaService {
         return repositorio.buscarPorId(id);
     }
 
-    public boolean actualizar(RutaModel r) throws SQLException {
-        return repositorio.actualizar(r);
+    public boolean actualizar(RutaModel ruta) throws SQLException {
+        return repositorio.actualizar(ruta);
     }
 
     public boolean eliminar(int id) throws SQLException {
@@ -41,7 +41,7 @@ public class RutaService {
     private static final Pattern PRIMER_NUMERO = Pattern.compile("\\d+");
 
     private static final Comparator<EstudianteModel> POR_LEJANIA =
-            Comparator.comparingInt((EstudianteModel e) -> numeroDeDireccion(e.getDireccion())).reversed();
+            Comparator.comparingInt((EstudianteModel estudiante) -> numeroDeDireccion(estudiante.getDireccion())).reversed();
 
     private static int numeroDeDireccion(String direccion) {
         if (direccion == null) {
@@ -68,9 +68,9 @@ public class RutaService {
 
     public List<EstudianteModel> listarPendientes() throws SQLException {
         List<EstudianteModel> pendientes = new ArrayList<>();
-        for (EstudianteModel e : estudianteRepositorio.listarSinRuta()) {
-            if ("ACTIVO".equalsIgnoreCase(e.getEstado())) {
-                pendientes.add(e);
+        for (EstudianteModel estudiante : estudianteRepositorio.listarSinRuta()) {
+            if ("ACTIVO".equalsIgnoreCase(estudiante.getEstado())) {
+                pendientes.add(estudiante);
             }
         }
         return pendientes;
@@ -89,8 +89,8 @@ public class RutaService {
             return 0;
         }
         List<EstudianteModel> nuevos = asignarEstudiantes(listarPendientes(), libres);
-        for (EstudianteModel e : nuevos) {
-            estudianteRepositorio.asignarRuta(e.getIdEstudiante(), ruta.getIdRuta());
+        for (EstudianteModel estudiante : nuevos) {
+            estudianteRepositorio.asignarRuta(estudiante.getIdEstudiante(), ruta.getIdRuta());
         }
         return nuevos.size();
     }
