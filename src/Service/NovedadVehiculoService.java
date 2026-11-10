@@ -9,8 +9,8 @@ public class NovedadVehiculoService {
 
     private final NovedadVehiculoRepository repositorio = new NovedadVehiculoRepository();
 
-    public boolean guardar(NovedadVehiculoModel n) throws SQLException {
-        return repositorio.guardar(n);
+    public boolean guardar(NovedadVehiculoModel novedadVehiculo) throws SQLException {
+        return repositorio.guardar(novedadVehiculo);
     }
 
     public List<NovedadVehiculoModel> listar() throws SQLException {

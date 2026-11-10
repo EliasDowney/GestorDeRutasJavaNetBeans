@@ -131,15 +131,20 @@ public class ConductoresVista extends JFrame {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
-            for (ConductorModel c : controlador.listar()) {
-                filas.add(c);
-                modeloTabla.addRow(new Object[]{c.getDocumento(), c.getNombre(), c.getApellido(),
-                    c.getTelefono(), c.getLicencia(), c.getEstado()});
+            for (ConductorModel conductor : controlador.listar()) {
+                filas.add(conductor);
+                modeloTabla.addRow(new Object[]{conductor.getDocumento(), conductor.getNombre(), conductor.getApellido(),
+                    conductor.getTelefono(), conductor.getLicencia(), conductor.getEstado()});
             }
             limpiarFormulario();
         } catch (SQLException ex) {
             fallo(ex);
         }
+        configurarPlaceholder(txtDocumento, "Ej: 10203040");
+        configurarPlaceholder(txtNombre, "Ej: Juan");
+        configurarPlaceholder(txtApellido, "Ej: Pérez");
+        configurarPlaceholder(txtTelefono, "Ej: 3001234567");
+        configurarPlaceholder(txtLicencia, "Ej: C2 / C3 / C4");
     }
 
     private void cargarSeleccion() {
@@ -147,15 +152,15 @@ public class ConductoresVista extends JFrame {
         if (fila < 0) {
             return;
         }
-        ConductorModel c = filas.get(fila);
-        idSeleccionado = c.getIdConductor();
-        txtDocumento.setText(c.getDocumento());
-        txtNombre.setText(c.getNombre());
-        txtApellido.setText(c.getApellido());
-        txtTelefono.setText(c.getTelefono());
-        txtLicencia.setText(c.getLicencia());
-        cmbEstado.setSelectedItem(c.getEstado());
-        btnEstado.setText("ACTIVO".equalsIgnoreCase(c.getEstado()) ? "Inactivar" : "Activar");
+        ConductorModel conductor = filas.get(fila);
+        idSeleccionado = conductor.getIdConductor();
+        txtDocumento.setText(conductor.getDocumento());
+        txtNombre.setText(conductor.getNombre());
+        txtApellido.setText(conductor.getApellido());
+        txtTelefono.setText(conductor.getTelefono());
+        txtLicencia.setText(conductor.getLicencia());
+        cmbEstado.setSelectedItem(conductor.getEstado());
+        btnEstado.setText("ACTIVO".equalsIgnoreCase(conductor.getEstado()) ? "Inactivar" : "Activar");
     }
 
     private void accionGuardar() {
@@ -165,10 +170,12 @@ public class ConductoresVista extends JFrame {
             return;
         }
         try {
-            controlador.guardar(recoger(false));
-            JOptionPane.showMessageDialog(this, "Conductor registrado correctamente.",
-                    "Conductores", JOptionPane.INFORMATION_MESSAGE);
-            cargarTabla();
+            boolean exito = controlador.guardarConValidacion(recoger(false));
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Conductor registrado correctamente.",
+                        "Conductores", JOptionPane.INFORMATION_MESSAGE);
+                cargarTabla();
+            }
         } catch (SQLException ex) {
             fallo(ex);
         }
@@ -200,18 +207,18 @@ public class ConductoresVista extends JFrame {
             aviso("Seleccione un conductor de la tabla.");
             return;
         }
-        ConductorModel c = filas.get(fila);
-        boolean activo = "ACTIVO".equalsIgnoreCase(c.getEstado());
+        ConductorModel conductor = filas.get(fila);
+        boolean activo = "ACTIVO".equalsIgnoreCase(conductor.getEstado());
         String accion = activo ? "inactivar" : "activar";
         int opcion = JOptionPane.showConfirmDialog(this,
-                "¿Desea " + accion + " al conductor " + c.getNombre() + " " + c.getApellido() + "?",
+                "¿Desea " + accion + " al conductor " + conductor.getNombre() + " " + conductor.getApellido() + "?",
                 "Cambiar estado", JOptionPane.YES_NO_OPTION);
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-        c.setEstado(activo ? "INACTIVO" : "ACTIVO");
+        conductor.setEstado(activo ? "INACTIVO" : "ACTIVO");
         try {
-            controlador.actualizar(c);
+            controlador.actualizar(conductor);
             cargarTabla();
         } catch (SQLException ex) {
             fallo(ex);
@@ -219,14 +226,16 @@ public class ConductoresVista extends JFrame {
     }
 
     private ConductorModel recoger(boolean conId) {
+        int idFinal = conId ? idSeleccionado : 0;
         return new ConductorModel(
-                conId ? idSeleccionado : 0,
-                txtLicencia.getText().trim(),
-                txtDocumento.getText().trim(),
-                txtNombre.getText().trim(),
-                txtApellido.getText().trim(),
-                txtTelefono.getText().trim(),
-                (String) cmbEstado.getSelectedItem());
+            txtDocumento.getText().trim(),       
+            txtNombre.getText().trim(),           
+            txtApellido.getText().trim(),         
+            txtTelefono.getText().trim(),         
+            (String) cmbEstado.getSelectedItem(), 
+            idFinal,                              
+            txtLicencia.getText().trim()          
+        );
     }
 
     private void limpiarFormulario() {
@@ -273,5 +282,28 @@ public class ConductoresVista extends JFrame {
         boton.setFocusPainted(false);
         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
-
+    private void configurarPlaceholder(javax.swing.JTextField textField, String textoGuia) {
+        if (textField.getText().trim().isEmpty()) {
+            textField.setText(textoGuia);
+            textField.setForeground(java.awt.Color.GRAY);
+        }
+        
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (textField.getText().equals(textoGuia)) {
+                    textField.setText("");
+                    textField.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (textField.getText().trim().isEmpty()) {
+                    textField.setText(textoGuia);
+                    textField.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+    }
 }

@@ -5,12 +5,10 @@ import Model.CoordinadorModel;
 import Model.EstudianteModel;
 import Model.RutaModel;
 import Model.VehiculoModel;
-import Service.ConductorService;
-import Service.CoordinadorService;
-import Service.RutaService;
-import Service.VehiculoService;
+import Service.*;
 import java.sql.SQLException;
 import java.util.List;
+import java.time.LocalTime;
 
 public class RutaController {
 
@@ -68,25 +66,39 @@ public class RutaController {
     }
 
     public String datosConductor(int idConductor) throws SQLException {
-        ConductorModel c = conductorServicio.buscarPorId(idConductor);
-        return (c == null) ? "Sin conductor" : c.getNombre() + " " + c.getApellido();
+        ConductorModel conductor = conductorServicio.buscarPorId(idConductor);
+        return (conductor == null) ? "Sin conductor" : conductor.getNombre() + " " + conductor.getApellido();
     }
 
     public String datosCoordinador(int idCoordinador) throws SQLException {
-        CoordinadorModel c = coordinadorServicio.buscarPorId(idCoordinador);
-        return (c == null) ? "Sin coordinador" : c.getNombre() + " " + c.getApellido();
+        CoordinadorModel conductor = coordinadorServicio.buscarPorId(idCoordinador);
+        return (conductor == null) ? "Sin coordinador" : conductor.getNombre() + " " + conductor.getApellido();
     }
 
     public String datosVehiculo(int idVehiculo) throws SQLException {
-        VehiculoModel v = vehiculoServicio.buscarPorId(idVehiculo);
-        return (v == null) ? "Sin vehiculo" : v.getPlaca() + " (capacidad: " + v.getCapacidad() + ")";
+        VehiculoModel vehiculo = vehiculoServicio.buscarPorId(idVehiculo);
+        return (vehiculo == null) ? "Sin vehiculo" : vehiculo.getPlaca() + " (capacidad: " + vehiculo.getCapacidad() + ")";
     }
 
     public int capacidad(int idVehiculo) throws SQLException {
-        VehiculoModel v = vehiculoServicio.buscarPorId(idVehiculo);
-        return (v == null) ? 0 : v.getCapacidad();
+        VehiculoModel vehiculo = vehiculoServicio.buscarPorId(idVehiculo);
+        return (vehiculo == null) ? 0 : vehiculo.getCapacidad();
+    }
+    public List<String> paradasRecorrido(List<EstudianteModel> asignados) {
+        return servicio.paradasRecorrido(asignados);
     }
 
+    public LocalTime horaSalida(RutaModel ruta) {
+        return servicio.horaSalida(ruta);
+    }
+
+    public int minutosPorParada(RutaModel ruta, int totalParadas) {
+        return servicio.minutosPorParada(ruta, totalParadas);
+    }
+
+    public String textoDiferencia(int realSegundos, int programadoMin) {
+        return servicio.textoDiferencia(realSegundos, programadoMin);
+    }
    
 
     public int cuposDisponibles(RutaModel ruta) throws SQLException {

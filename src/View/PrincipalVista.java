@@ -52,14 +52,17 @@ public class PrincipalVista extends JFrame {
         logotipo.setBackground(Tema.NAVY);
         logotipo.setLayout(new BoxLayout(logotipo, BoxLayout.Y_AXIS));
         logotipo.setBorder(BorderFactory.createEmptyBorder(16, 24, 10, 24));
+
         JLabel titulo = new JLabel("COLEGIO LA DIVINA RUTA");
         titulo.setForeground(Color.WHITE);
         titulo.setFont(Tema.fuente(Font.BOLD, 24));
-        titulo.setAlignmentX(LEFT_ALIGNMENT);
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         JLabel subtitulo = new JLabel("Sistema de Gestion de Rutas Escolares");
         subtitulo.setForeground(Tema.GOLD);
         subtitulo.setFont(Tema.fuente(Font.PLAIN, 14));
-        subtitulo.setAlignmentX(LEFT_ALIGNMENT);
+        subtitulo.setAlignmentX(Component.CENTER_ALIGNMENT); // <-- Cambiado a CENTER_ALIGNMENT
+
         logotipo.add(titulo);
         logotipo.add(Box.createVerticalStrut(2));
         logotipo.add(subtitulo);

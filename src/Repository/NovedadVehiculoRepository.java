@@ -10,27 +10,27 @@ import java.util.List;
 
 public class NovedadVehiculoRepository {
 
-    public boolean guardar(NovedadVehiculoModel n) throws SQLException {
-        try (Connection con = Conexion.conectar()) {
-            con.setAutoCommit(false);
+    public boolean guardar(NovedadVehiculoModel novedadVehiculo) throws SQLException {
+        try (Connection conexion = Conexion.conectar()) {
+            conexion.setAutoCommit(false);
             try {
-                int idNovedad = new NovedadRepository().insertarBase(con, n);
+                int idNovedad = new NovedadRepository().insertarBase(conexion, novedadVehiculo);
                 if (idNovedad < 0) {
-                    con.rollback();
+                    conexion.rollback();
                     return false;
                 }
                 String sql = "INSERT INTO novedad_vehiculo (id_novedad, id_vehiculo, id_ruta, id_conductor) VALUES (?,?,?,?)";
-                try (PreparedStatement ps = con.prepareStatement(sql)) {
+                try (PreparedStatement ps = conexion.prepareStatement(sql)) {
                     ps.setInt(1, idNovedad);
-                    ps.setInt(2, n.getIdVehiculo());
-                    ps.setInt(3, n.getIdRuta());
-                    ps.setInt(4, n.getIdConductor());
+                    ps.setInt(2, novedadVehiculo.getIdVehiculo());
+                    ps.setInt(3, novedadVehiculo.getIdRuta());
+                    ps.setInt(4, novedadVehiculo.getIdConductor());
                     ps.executeUpdate();
                 }
-                con.commit();
+                conexion.commit();
                 return true;
             } catch (SQLException e) {
-                con.rollback();
+                conexion.rollback();
                 throw e;
             }
         }
@@ -38,35 +38,35 @@ public class NovedadVehiculoRepository {
 
     public List<NovedadVehiculoModel> listar() throws SQLException {
         List<NovedadVehiculoModel> lista = new ArrayList<>();
-        String sql = "SELECT n.*, nv.id_vehiculo, nv.id_ruta, nv.id_conductor "
-                + "FROM novedad_vehiculo nv JOIN novedad n ON n.id_novedad = nv.id_novedad";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(new NovedadVehiculoModel(rs.getInt("id_novedad"), rs.getString("descripcion"),
-                        rs.getDate("fecha").toLocalDate(), rs.getString("estado"), rs.getString("categoria"),
-                        rs.getInt("id_vehiculo"), rs.getInt("id_ruta"), rs.getInt("id_conductor")));
+        String sql = "SELECT novedadVehiculo.*, nv.id_vehiculo, nv.id_ruta, nv.id_conductor "
+                + "FROM novedad_vehiculo nv JOIN novedad novedadVehiculo ON novedadVehiculo.id_novedad = nv.id_novedad";
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql); ResultSet resultadoConsulta = ps.executeQuery()) {
+            while (resultadoConsulta.next()) {
+                lista.add(new NovedadVehiculoModel(resultadoConsulta.getInt("id_novedad"), resultadoConsulta.getString("descripcion"),
+                        resultadoConsulta.getDate("fecha").toLocalDate(), resultadoConsulta.getString("estado"), resultadoConsulta.getString("categoria"),
+                        resultadoConsulta.getInt("id_vehiculo"), resultadoConsulta.getInt("id_ruta"), resultadoConsulta.getInt("id_conductor")));
             }
         }
         return lista;
     }
 
     public boolean eliminar(int idNovedad) throws SQLException {
-        try (Connection con = Conexion.conectar()) {
-            con.setAutoCommit(false);
+        try (Connection conexion = Conexion.conectar()) {
+            conexion.setAutoCommit(false);
             try {
                 String sql = "DELETE FROM novedad_vehiculo WHERE id_novedad=?";
-                try (PreparedStatement ps = con.prepareStatement(sql)) {
+                try (PreparedStatement ps = conexion.prepareStatement(sql)) {
                     ps.setInt(1, idNovedad);
                     if (ps.executeUpdate() <= 0) {
-                        con.rollback();
+                        conexion.rollback();
                         return false;
                     }
                 }
-                boolean ok = new NovedadRepository().eliminar(con, idNovedad);
-                con.commit();
+                boolean ok = new NovedadRepository().eliminar(conexion, idNovedad);
+                conexion.commit();
                 return ok;
             } catch (SQLException e) {
-                con.rollback();
+                conexion.rollback();
                 throw e;
             }
         }

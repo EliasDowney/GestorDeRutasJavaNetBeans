@@ -7,12 +7,15 @@ import Repository.EstudianteRepository;
 import Repository.RutaRepository;
 import Repository.VehiculoRepository;
 import java.sql.SQLException;
+import java.util.*;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.time.Duration;
+import java.time.LocalTime;
 
 
 public class RutaService {
@@ -20,8 +23,8 @@ public class RutaService {
     private final RutaRepository repositorio = new RutaRepository();
     private final EstudianteRepository estudianteRepositorio = new EstudianteRepository();
 
-    public int guardar(RutaModel r) throws SQLException {
-        return repositorio.guardar(r);
+    public int guardar(RutaModel ruta) throws SQLException {
+        return repositorio.guardar(ruta);
     }
 
     public List<RutaModel> listar() throws SQLException {
@@ -32,8 +35,8 @@ public class RutaService {
         return repositorio.buscarPorId(id);
     }
 
-    public boolean actualizar(RutaModel r) throws SQLException {
-        return repositorio.actualizar(r);
+    public boolean actualizar(RutaModel ruta) throws SQLException {
+        return repositorio.actualizar(ruta);
     }
 
     public boolean eliminar(int id) throws SQLException {
@@ -43,7 +46,7 @@ public class RutaService {
     private static final Pattern PRIMER_NUMERO = Pattern.compile("\\d+");
 
     private static final Comparator<EstudianteModel> POR_LEJANIA =
-            Comparator.comparingInt((EstudianteModel e) -> numeroDeDireccion(e.getDireccion())).reversed();
+            Comparator.comparingInt((EstudianteModel estudiante) -> numeroDeDireccion(estudiante.getDireccion())).reversed();
 
     private static int numeroDeDireccion(String direccion) {
         if (direccion == null) {
@@ -70,9 +73,9 @@ public class RutaService {
 
     public List<EstudianteModel> listarPendientes() throws SQLException {
         List<EstudianteModel> pendientes = new ArrayList<>();
-        for (EstudianteModel e : estudianteRepositorio.listarSinRuta()) {
-            if ("ACTIVO".equalsIgnoreCase(e.getEstado())) {
-                pendientes.add(e);
+        for (EstudianteModel estudiante : estudianteRepositorio.listarSinRuta()) {
+            if ("ACTIVO".equalsIgnoreCase(estudiante.getEstado())) {
+                pendientes.add(estudiante);
             }
         }
         return pendientes;
@@ -91,8 +94,8 @@ public class RutaService {
             return 0;
         }
         List<EstudianteModel> nuevos = asignarEstudiantes(listarPendientes(), libres);
-        for (EstudianteModel e : nuevos) {
-            estudianteRepositorio.asignarRuta(e.getIdEstudiante(), ruta.getIdRuta());
+        for (EstudianteModel estudiante : nuevos) {
+            estudianteRepositorio.asignarRuta(estudiante.getIdEstudiante(), ruta.getIdRuta());
         }
         return nuevos.size();
     }
@@ -100,7 +103,44 @@ public class RutaService {
     public boolean quitarEstudiante(int idEstudiante) throws SQLException {
         return estudianteRepositorio.quitarRuta(idEstudiante);
     }
+    private static final int MINUTOS_POR_PARADA = 10;
+    public List<String> paradasRecorrido(List<EstudianteModel> asignados) {
+        List<EstudianteModel> ordenados = new ArrayList<>(asignados);
+        ordenados.sort(Comparator.comparingInt(
+                (EstudianteModel estudiante) -> numeroDeDireccion(estudiante.getDireccion())));
+        List<String> paradas = new ArrayList<>();
+        for (EstudianteModel estudiante : ordenados) {
+            String direccion = estudiante.getDireccion();
+            paradas.add(direccion == null || direccion.isBlank() ? "Sin direccion" : direccion);
+        }
+        return paradas;
+    }
 
+    public LocalTime horaSalida(RutaModel ruta) {
+        return leerHora(ruta.getHoraSalida(), LocalTime.of(6, 0));
+    }
+    public int minutosPorParada(RutaModel ruta, int totalParadas) {
+        LocalTime salida = horaSalida(ruta);
+        long duracion = Duration.between(salida, leerHora(ruta.getHoraFinal(), salida)).toMinutes();
+        return (duracion > 0 && totalParadas > 0)
+                ? (int) Math.max(1, duracion / totalParadas) : MINUTOS_POR_PARADA;
+    }
+    public String textoDiferencia(int realSegundos, int programadoMin) {
+        int dif = realSegundos - programadoMin * 60;
+        if (dif == 0) {
+            return "justo a tiempo";
+        }
+        int abs = Math.abs(dif);
+        return (dif < 0 ? "adelantados " : "retrasados ") + (abs / 60) + " min " + (abs % 60) + " s";
+    }
+
+    private LocalTime leerHora(Object valor, LocalTime porDefecto) {
+        try {
+            return LocalTime.parse(String.valueOf(valor));
+        } catch (Exception ex) {
+            return porDefecto;
+        }
+    }
     
     public int cuposOcupados(RutaModel ruta) throws SQLException {
     return estudianteRepositorio.listarPorRuta(ruta.getIdRuta()).size();

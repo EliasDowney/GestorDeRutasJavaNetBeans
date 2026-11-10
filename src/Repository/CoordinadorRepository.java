@@ -11,19 +11,20 @@ import java.util.List;
 
 public class CoordinadorRepository {
 
-    public int guardar(CoordinadorModel c) throws SQLException {
+    public int guardar(CoordinadorModel coordinador) throws SQLException {
         String sql = "INSERT INTO coordinador (documento, nombre, apellido, telefono, correo, estado) VALUES (?,?,?,?,?,?)";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, c.getDocumento());
-            ps.setString(2, c.getNombre());
-            ps.setString(3, c.getApellido());
-            ps.setString(4, c.getTelefono());
-            ps.setString(5, c.getCorreo());
-            ps.setString(6, c.getEstado());
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, coordinador.getDocumento());
+            ps.setString(2, coordinador.getNombre());
+            ps.setString(3, coordinador.getApellido());
+            ps.setString(4, coordinador.getTelefono());
+            ps.setString(5, coordinador.getCorreo());
+            ps.setString(6, coordinador.getEstado());
             ps.executeUpdate();
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
+            try (ResultSet resultadoConsulta = ps.getGeneratedKeys()) {
+                if (resultadoConsulta.next()) {
+                    return resultadoConsulta.getInt(1);
                 }
             }
         }
@@ -33,9 +34,11 @@ public class CoordinadorRepository {
     public List<CoordinadorModel> listar() throws SQLException {
         List<CoordinadorModel> lista = new ArrayList<>();
         String sql = "SELECT * FROM coordinador";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(fila(rs));
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql); 
+             ResultSet resultadoConsulta = ps.executeQuery()) {
+            while (resultadoConsulta.next()) {
+                lista.add(fila(resultadoConsulta));
             }
         }
         return lista;
@@ -43,43 +46,51 @@ public class CoordinadorRepository {
 
     public CoordinadorModel buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM coordinador WHERE id_coordinador=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return fila(rs);
+            try (ResultSet resultadoConsulta = ps.executeQuery()) {
+                if (resultadoConsulta.next()) {
+                    return fila(resultadoConsulta);
                 }
             }
         }
         return null;
     }
 
-    public boolean actualizar(CoordinadorModel c) throws SQLException {
+    public boolean actualizar(CoordinadorModel coordinador) throws SQLException {
         String sql = "UPDATE coordinador SET documento=?, nombre=?, apellido=?, telefono=?, correo=?, estado=? WHERE id_coordinador=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, c.getDocumento());
-            ps.setString(2, c.getNombre());
-            ps.setString(3, c.getApellido());
-            ps.setString(4, c.getTelefono());
-            ps.setString(5, c.getCorreo());
-            ps.setString(6, c.getEstado());
-            ps.setInt(7, c.getIdCoordinador());
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, coordinador.getDocumento());
+            ps.setString(2, coordinador.getNombre());
+            ps.setString(3, coordinador.getApellido());
+            ps.setString(4, coordinador.getTelefono());
+            ps.setString(5, coordinador.getCorreo());
+            ps.setString(6, coordinador.getEstado());
+            ps.setInt(7, coordinador.getIdCoordinador());
             return ps.executeUpdate() > 0;
         }
     }
 
     public boolean eliminar(int id) throws SQLException {
         String sql = "DELETE FROM coordinador WHERE id_coordinador=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         }
     }
 
-    private CoordinadorModel fila(ResultSet rs) throws SQLException {
-        return new CoordinadorModel(rs.getInt("id_coordinador"), rs.getString("correo"),
-                rs.getString("documento"), rs.getString("nombre"), rs.getString("apellido"),
-                rs.getString("telefono"), rs.getString("estado"));
+    private CoordinadorModel fila(ResultSet resultadoConsulta) throws SQLException {
+        return new CoordinadorModel(
+            resultadoConsulta.getString("documento"), 
+            resultadoConsulta.getString("nombre"), 
+            resultadoConsulta.getString("apellido"),
+            resultadoConsulta.getString("telefono"), 
+            resultadoConsulta.getString("correo"),
+            resultadoConsulta.getString("estado"),
+            resultadoConsulta.getInt("id_coordinador")
+        );
     }
-
-}
+ }

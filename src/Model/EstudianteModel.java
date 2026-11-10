@@ -1,7 +1,11 @@
 package Model;
 
-public class EstudianteModel extends UsuarioModel {
-
+public class EstudianteModel {
+    private String documento;
+    private String nombre;
+    private String apellido;
+    private String telefono;
+    private String estado;
     private int idEstudiante;
     private String grado;
     private String direccion;
@@ -9,18 +13,58 @@ public class EstudianteModel extends UsuarioModel {
     private String correoAcudiente;
     private Integer idRuta;
 
-    public EstudianteModel() {
-    }
-
-    public EstudianteModel(int idEstudiante, String grado, String direccion,
-            String nombreAcudiente, String correoAcudiente,
-            String documento, String nombre, String apellido, String telefono, String estado) {
-        super(documento, nombre, apellido, telefono, estado);
+    public EstudianteModel(String documento, String nombre, String apellido, String telefono, String estado, int idEstudiante, String grado, String direccion, String nombreAcudiente, String correoAcudiente, Integer idRuta) {
+        this.documento = documento;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.telefono = telefono;
+        this.estado = estado;
         this.idEstudiante = idEstudiante;
         this.grado = grado;
         this.direccion = direccion;
         this.nombreAcudiente = nombreAcudiente;
         this.correoAcudiente = correoAcudiente;
+        this.idRuta = idRuta;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public int getIdEstudiante() {
@@ -71,13 +115,7 @@ public class EstudianteModel extends UsuarioModel {
         this.idRuta = idRuta;
     }
 
-    public String obtenerUbicacion() {
+    public String getUbicacion() {
         return "Dirección: " + direccion;
     }
-
-    @Override
-    public String toString() {
-        return getNombre() + " " + getApellido() + " (" + getDocumento() + ")";
-    }
-
 }

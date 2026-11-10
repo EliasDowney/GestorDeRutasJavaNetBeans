@@ -9,8 +9,8 @@ public class CoordinadorService {
 
     private final CoordinadorRepository repositorio = new CoordinadorRepository();
 
-    public int guardar(CoordinadorModel c) throws SQLException {
-        return repositorio.guardar(c);
+    public int guardar(CoordinadorModel coordinador) throws SQLException {
+        return repositorio.guardar(coordinador);
     }
 
     public List<CoordinadorModel> listar() throws SQLException {
@@ -21,8 +21,8 @@ public class CoordinadorService {
         return repositorio.buscarPorId(id);
     }
 
-    public boolean actualizar(CoordinadorModel c) throws SQLException {
-        return repositorio.actualizar(c);
+    public boolean actualizar(CoordinadorModel coordinador) throws SQLException {
+        return repositorio.actualizar(coordinador);
     }
 
     public boolean eliminar(int id) throws SQLException {

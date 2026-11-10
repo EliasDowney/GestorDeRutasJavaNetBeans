@@ -126,9 +126,9 @@ public class VehiculosVista extends JFrame {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
-            for (VehiculoModel v : controlador.listar()) {
-                filas.add(v);
-                modeloTabla.addRow(new Object[]{v.getPlaca(), v.getCapacidad(), v.getEstado()});
+            for (VehiculoModel vehiculo : controlador.listar()) {
+                filas.add(vehiculo);
+                modeloTabla.addRow(new Object[]{vehiculo.getPlaca(), vehiculo.getCapacidad(), vehiculo.getEstado()});
             }
             limpiarFormulario();
         } catch (SQLException ex) {
@@ -141,28 +141,27 @@ public class VehiculosVista extends JFrame {
         if (fila < 0) {
             return;
         }
-        VehiculoModel v = filas.get(fila);
-        idSeleccionado = v.getIdVehiculo();
-        txtPlaca.setText(v.getPlaca());
-        txtCapacidad.setText(String.valueOf(v.getCapacidad()));
-        cmbEstado.setSelectedItem(v.getEstado());
-        btnEstado.setText("ACTIVO".equalsIgnoreCase(v.getEstado()) ? "Inactivar" : "Activar");
+        VehiculoModel vehiculo = filas.get(fila);
+        idSeleccionado = vehiculo.getIdVehiculo();
+        txtPlaca.setText(vehiculo.getPlaca());
+        txtCapacidad.setText(String.valueOf(vehiculo.getCapacidad()));
+        cmbEstado.setSelectedItem(vehiculo.getEstado());
+        btnEstado.setText("ACTIVO".equalsIgnoreCase(vehiculo.getEstado()) ? "Inactivar" : "Activar");
     }
 
     private void accionGuardar() {
-        VehiculoModel v = recoger(false);
-        if (v == null) {
-            return;
-        }
         try {
-            controlador.guardar(v);
-            JOptionPane.showMessageDialog(this, "Vehiculo registrado correctamente.",
-                    "Vehiculos", JOptionPane.INFORMATION_MESSAGE);
-            cargarTabla();
-        }catch (Exepcionv Placarepetida){
-            aviso(Placarepetida.getMessage());
-        } catch (SQLException ex) {
-            fallo(ex);
+            boolean exito = controlador.guardarConValidacion(recoger(false));
+            if (exito) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Vehículo registrado correctamente.", 
+                    "Vehículos", 
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                cargarTabla();
+                limpiarFormulario();
+            }
+        } catch (SQLException | Exepcionv ex) {
+            aviso(ex.getMessage());
         }
     }
 
@@ -171,12 +170,12 @@ public class VehiculosVista extends JFrame {
             aviso("Seleccione un vehiculo de la tabla para actualizarlo.");
             return;
         }
-        VehiculoModel v = recoger(true);
-        if (v == null) {
+        VehiculoModel vehiculo = recoger(true);
+        if (vehiculo == null) {
             return;
         }
         try {
-            controlador.actualizar(v);
+            controlador.actualizar(vehiculo);
             JOptionPane.showMessageDialog(this, "Vehiculo actualizado.",
                     "Vehiculos", JOptionPane.INFORMATION_MESSAGE);
             cargarTabla();
@@ -193,18 +192,18 @@ public class VehiculosVista extends JFrame {
             aviso("Seleccione un vehiculo de la tabla.");
             return;
         }
-        VehiculoModel v = filas.get(fila);
-        boolean activo = "ACTIVO".equalsIgnoreCase(v.getEstado());
+        VehiculoModel vehiculo = filas.get(fila);
+        boolean activo = "ACTIVO".equalsIgnoreCase(vehiculo.getEstado());
         String accion = activo ? "inactivar" : "activar";
         int opcion = JOptionPane.showConfirmDialog(this,
-                "¿Desea " + accion + " el vehiculo con placa " + v.getPlaca() + "?",
+                "¿Desea " + accion + " el vehiculo con placa " + vehiculo.getPlaca() + "?",
                 "Cambiar estado", JOptionPane.YES_NO_OPTION);
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-        v.setEstado(activo ? "INACTIVO" : "ACTIVO");
+        vehiculo.setEstado(activo ? "INACTIVO" : "ACTIVO");
         try {
-            controlador.actualizar(v);
+            controlador.actualizar(vehiculo);
             cargarTabla();
             
         } catch (Exepcionv Placarepetida) {

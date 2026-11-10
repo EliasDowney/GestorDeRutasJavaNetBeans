@@ -246,36 +246,36 @@ public class NovedadesVista extends JFrame {
         try {
             cmbEstudiante.removeAllItems();
             estudiantesMap.clear();
-            for (EstudianteModel e : controladorEstudiante.listarEstudiantes()) {
-                estudiantesMap.put(e.getIdEstudiante(), e.getNombre() + " " + e.getApellido());
-                if ("ACTIVO".equalsIgnoreCase(e.getEstado())) {
-                    cmbEstudiante.addItem(e);
+            for (EstudianteModel estudiante : controladorEstudiante.listarEstudiantes()) {
+                estudiantesMap.put(estudiante.getIdEstudiante(), estudiante.getNombre() + " " + estudiante.getApellido());
+                if ("ACTIVO".equalsIgnoreCase(estudiante.getEstado())) {
+                    cmbEstudiante.addItem(estudiante);
                 }
             }
             cmbVehiculo.removeAllItems();
             vehiculosMap.clear();
-            for (VehiculoModel v : controladorVehiculo.listarVehiculos()) {
-                vehiculosMap.put(v.getIdVehiculo(), v.getPlaca());
-                if ("ACTIVO".equalsIgnoreCase(v.getEstado())) {
-                    cmbVehiculo.addItem(v);
+            for (VehiculoModel vehiculo : controladorVehiculo.listarVehiculos()) {
+                vehiculosMap.put(vehiculo.getIdVehiculo(), vehiculo.getPlaca());
+                if ("ACTIVO".equalsIgnoreCase(vehiculo.getEstado())) {
+                    cmbVehiculo.addItem(vehiculo);
                 }
             }
             cmbConductor.removeAllItems();
             conductoresMap.clear();
-            for (ConductorModel c : controladorVehiculo.listarConductores()) {
-                conductoresMap.put(c.getIdConductor(), c.getNombre() + " " + c.getApellido());
-                if ("ACTIVO".equalsIgnoreCase(c.getEstado())) {
-                    cmbConductor.addItem(c);
+            for (ConductorModel conductor : controladorVehiculo.listarConductores()) {
+                conductoresMap.put(conductor.getIdConductor(), conductor.getNombre() + " " + conductor.getApellido());
+                if ("ACTIVO".equalsIgnoreCase(conductor.getEstado())) {
+                    cmbConductor.addItem(conductor);
                 }
             }
             cmbRutaEst.removeAllItems();
             cmbRutaVeh.removeAllItems();
             rutasMap.clear();
-            for (RutaModel r : controladorEstudiante.listarRutas()) {
-                rutasMap.put(r.getIdRuta(), r.getNombre());
-                if ("ACTIVO".equalsIgnoreCase(r.getEstado())) {
-                    cmbRutaEst.addItem(r);
-                    cmbRutaVeh.addItem(r);
+            for (RutaModel ruta : controladorEstudiante.listarRutas()) {
+                rutasMap.put(ruta.getIdRuta(), ruta.getNombre());
+                if ("ACTIVO".equalsIgnoreCase(ruta.getEstado())) {
+                    cmbRutaEst.addItem(ruta);
+                    cmbRutaVeh.addItem(ruta);
                 }
             }
         } catch (SQLException ex) {
@@ -301,24 +301,24 @@ public class NovedadesVista extends JFrame {
             modeloTabla.setRowCount(0);
             filas.clear();
             int total = 0;
-            for (NovedadEstudianteModel n : controladorEstudiante.listarNovedadesEstudiante()) {
+            for (NovedadEstudianteModel novedad : controladorEstudiante.listarNovedadesEstudiante()) {
                 total++;
-                String asociado = estudiantesMap.getOrDefault(n.getIdEstudiante(), "?") + " / "
-                        + rutasMap.getOrDefault(n.getIdRuta(), "-");
-                if (pasaFiltro("Estudiante", n.getDescripcion(), String.valueOf(n.getFecha()), n.getEstado(), asociado)) {
-                    filas.add(new Fila(n.getIdNovedad(), "ESTUDIANTE"));
-                    modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Estudiante", n.getDescripcion(),
-                        n.getFecha(), n.getEstado(), asociado});
+                String asociado = estudiantesMap.getOrDefault(novedad.getIdEstudiante(), "?") + " / "
+                        + rutasMap.getOrDefault(novedad.getIdRuta(), "-");
+                if (pasaFiltro("Estudiante", novedad.getDescripcion(), String.valueOf(novedad.getFecha()), novedad.getEstado(), asociado)) {
+                    filas.add(new Fila(novedad.getIdNovedad(), "ESTUDIANTE"));
+                    modeloTabla.addRow(new Object[]{novedad.getIdNovedad(), "Estudiante", novedad.getDescripcion(),
+                        novedad.getFecha(), novedad.getEstado(), asociado});
                 }
             }
-            for (NovedadVehiculoModel n : controladorVehiculo.listarNovedadesVehiculo()) {
+            for (NovedadVehiculoModel novedad : controladorVehiculo.listarNovedadesVehiculo()) {
                 total++;
-                String asociado = vehiculosMap.getOrDefault(n.getIdVehiculo(), "?") + " / "
-                        + conductoresMap.getOrDefault(n.getIdConductor(), "-");
-                if (pasaFiltro("Vehiculo", n.getDescripcion(), String.valueOf(n.getFecha()), n.getEstado(), asociado)) {
-                    filas.add(new Fila(n.getIdNovedad(), "VEHICULO"));
-                    modeloTabla.addRow(new Object[]{n.getIdNovedad(), "Vehiculo", n.getDescripcion(),
-                        n.getFecha(), n.getEstado(), asociado});
+                String asociado = vehiculosMap.getOrDefault(novedad.getIdVehiculo(), "?") + " / "
+                        + conductoresMap.getOrDefault(novedad.getIdConductor(), "-");
+                if (pasaFiltro("Vehiculo", novedad.getDescripcion(), String.valueOf(novedad.getFecha()), novedad.getEstado(), asociado)) {
+                    filas.add(new Fila(novedad.getIdNovedad(), "VEHICULO"));
+                    modeloTabla.addRow(new Object[]{novedad.getIdNovedad(), "Vehiculo", novedad.getDescripcion(),
+                        novedad.getFecha(), novedad.getEstado(), asociado});
                 }
             }
             LabelResultados.setText(modeloTabla.getRowCount() + " de " + total + " novedades");
@@ -374,24 +374,24 @@ public class NovedadesVista extends JFrame {
         String estado = "PENDIENTE";
         try {
             if ("Estudiante".equals(cmbTipo.getSelectedItem())) {
-                EstudianteModel e = (EstudianteModel) cmbEstudiante.getSelectedItem();
-                RutaModel r = (RutaModel) cmbRutaEst.getSelectedItem();
-                if (e == null || r == null) {
+                EstudianteModel estudiante = (EstudianteModel) cmbEstudiante.getSelectedItem();
+                RutaModel ruta = (RutaModel) cmbRutaEst.getSelectedItem();
+                if (estudiante == null || ruta == null) {
                     aviso("Seleccione el estudiante y la ruta.");
                     return;
                 }
                 controladorEstudiante.guardarEstudiante(new NovedadEstudianteModel(0, descripcion, fecha, estado,
-                        "ESTUDIANTE", e.getIdEstudiante(), r.getIdRuta()));
+                        "ESTUDIANTE", estudiante.getIdEstudiante(), ruta.getIdRuta()));
             } else {
-                VehiculoModel v = (VehiculoModel) cmbVehiculo.getSelectedItem();
-                RutaModel r = (RutaModel) cmbRutaVeh.getSelectedItem();
-                ConductorModel c = (ConductorModel) cmbConductor.getSelectedItem();
-                if (v == null || r == null || c == null) {
+                VehiculoModel vehiculo = (VehiculoModel) cmbVehiculo.getSelectedItem();
+                RutaModel ruta = (RutaModel) cmbRutaVeh.getSelectedItem();
+                ConductorModel conductor = (ConductorModel) cmbConductor.getSelectedItem();
+                if (vehiculo == null || ruta == null || conductor == null) {
                     aviso("Seleccione el vehiculo, la ruta y el conductor.");
                     return;
                 }
                 controladorVehiculo.guardarVehiculo(new NovedadVehiculoModel(0, descripcion, fecha, estado,
-                        "VEHICULO", v.getIdVehiculo(), r.getIdRuta(), c.getIdConductor()));
+                        "VEHICULO", vehiculo.getIdVehiculo(), ruta.getIdRuta(), conductor.getIdConductor()));
             }
             JOptionPane.showMessageDialog(this, "Novedad registrada correctamente.",
                     "Novedades", JOptionPane.INFORMATION_MESSAGE);

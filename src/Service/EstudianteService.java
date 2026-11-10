@@ -7,10 +7,11 @@ import java.util.List;
 
 public class EstudianteService {
 
+    
     private final EstudianteRepository repositorio = new EstudianteRepository();
 
-    public int guardar(EstudianteModel e) throws SQLException {
-        return repositorio.guardar(e);
+    public int guardar(EstudianteModel estudiante) throws SQLException {
+        return repositorio.guardar(estudiante);
     }
 
     public List<EstudianteModel> listar() throws SQLException {
@@ -21,8 +22,8 @@ public class EstudianteService {
         return repositorio.buscarPorId(id);
     }
 
-    public boolean actualizar(EstudianteModel e) throws SQLException {
-        return repositorio.actualizar(e);
+    public boolean actualizar(EstudianteModel estudiante) throws SQLException {
+        return repositorio.actualizar(estudiante);
     }
 
     public boolean eliminar(int id) throws SQLException {

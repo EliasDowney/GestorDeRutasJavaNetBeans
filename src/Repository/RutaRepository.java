@@ -12,20 +12,20 @@ import java.util.List;
 
 public class RutaRepository {
 
-    public int guardar(RutaModel r) throws SQLException {
+    public int guardar(RutaModel ruta) throws SQLException {
         String sql = "INSERT INTO ruta (nombre, hora_salida, hora_final, estado, id_conductor, id_vehiculo, id_coordinador) VALUES (?,?,?,?,?,?,?)";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, r.getNombre());
-            ps.setTime(2, Time.valueOf(r.getHoraSalida()));
-            ps.setTime(3, Time.valueOf(r.getHoraFinal()));
-            ps.setString(4, r.getEstado());
-            ps.setInt(5, r.getIdConductor());
-            ps.setInt(6, r.getIdVehiculo());
-            ps.setInt(7, r.getIdCoordinador());
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, ruta.getNombre());
+            ps.setTime(2, Time.valueOf(ruta.getHoraSalida()));
+            ps.setTime(3, Time.valueOf(ruta.getHoraFinal()));
+            ps.setString(4, ruta.getEstado());
+            ps.setInt(5, ruta.getIdConductor());
+            ps.setInt(6, ruta.getIdVehiculo());
+            ps.setInt(7, ruta.getIdCoordinador());
             ps.executeUpdate();
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
+            try (ResultSet resultadoConsulta = ps.getGeneratedKeys()) {
+                if (resultadoConsulta.next()) {
+                    return resultadoConsulta.getInt(1);
                 }
             }
         }
@@ -35,9 +35,9 @@ public class RutaRepository {
     public List<RutaModel> listar() throws SQLException {
         List<RutaModel> lista = new ArrayList<>();
         String sql = "SELECT * FROM ruta";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(fila(rs));
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql); ResultSet resultadoConsulta = ps.executeQuery()) {
+            while (resultadoConsulta.next()) {
+                lista.add(fila(resultadoConsulta));
             }
         }
         return lista;
@@ -45,44 +45,44 @@ public class RutaRepository {
 
     public RutaModel buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM ruta WHERE id_ruta=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return fila(rs);
+            try (ResultSet resultadoConsulta = ps.executeQuery()) {
+                if (resultadoConsulta.next()) {
+                    return fila(resultadoConsulta);
                 }
             }
         }
         return null;
     }
 
-    public boolean actualizar(RutaModel r) throws SQLException {
+    public boolean actualizar(RutaModel ruta) throws SQLException {
         String sql = "UPDATE ruta SET nombre=?, hora_salida=?, hora_final=?, estado=?, id_conductor=?, id_vehiculo=?, id_coordinador=? WHERE id_ruta=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, r.getNombre());
-            ps.setTime(2, Time.valueOf(r.getHoraSalida()));
-            ps.setTime(3, Time.valueOf(r.getHoraFinal()));
-            ps.setString(4, r.getEstado());
-            ps.setInt(5, r.getIdConductor());
-            ps.setInt(6, r.getIdVehiculo());
-            ps.setInt(7, r.getIdCoordinador());
-            ps.setInt(8, r.getIdRuta());
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, ruta.getNombre());
+            ps.setTime(2, Time.valueOf(ruta.getHoraSalida()));
+            ps.setTime(3, Time.valueOf(ruta.getHoraFinal()));
+            ps.setString(4, ruta.getEstado());
+            ps.setInt(5, ruta.getIdConductor());
+            ps.setInt(6, ruta.getIdVehiculo());
+            ps.setInt(7, ruta.getIdCoordinador());
+            ps.setInt(8, ruta.getIdRuta());
             return ps.executeUpdate() > 0;
         }
     }
 
     public boolean eliminar(int id) throws SQLException {
         String sql = "DELETE FROM ruta WHERE id_ruta=?";
-        try (Connection con = Conexion.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         }
     }
 
-    private RutaModel fila(ResultSet rs) throws SQLException {
-        return new RutaModel(rs.getInt("id_ruta"), rs.getString("nombre"),
-                rs.getTime("hora_salida").toLocalTime(), rs.getTime("hora_final").toLocalTime(),
-                rs.getString("estado"), rs.getInt("id_conductor"), rs.getInt("id_vehiculo"), rs.getInt("id_coordinador"));
+    private RutaModel fila(ResultSet resultadoConsulta) throws SQLException {
+        return new RutaModel(resultadoConsulta.getInt("id_ruta"), resultadoConsulta.getString("nombre"),
+                resultadoConsulta.getTime("hora_salida").toLocalTime(), resultadoConsulta.getTime("hora_final").toLocalTime(),
+                resultadoConsulta.getString("estado"), resultadoConsulta.getInt("id_conductor"), resultadoConsulta.getInt("id_vehiculo"), resultadoConsulta.getInt("id_coordinador"));
     }
 
 }

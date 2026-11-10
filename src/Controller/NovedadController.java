@@ -5,11 +5,7 @@ import Model.EstudianteModel;
 import Model.NovedadModel;
 import Model.RutaModel;
 import Model.VehiculoModel;
-import Service.ConductorService;
-import Service.EstudianteService;
-import Service.NovedadService;
-import Service.RutaService;
-import Service.VehiculoService;
+import Service.*;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,10 +16,9 @@ public abstract class NovedadController {
     private final VehiculoService vehiculos = new VehiculoService();
     private final ConductorService conductores = new ConductorService();
     private final RutaService rutas = new RutaService();
-
-    // CRUD generico de Novedad (aportado en el PR #6 por el companero)
-    public int guardar(NovedadModel n) throws SQLException {
-        return novedadServicio.insertarBase(n);
+    
+    public int guardar(NovedadModel novedad) throws SQLException {
+        return novedadServicio.insertarBase(novedad);
     }
 
     public List<NovedadModel> listar() throws SQLException {
@@ -34,15 +29,13 @@ public abstract class NovedadController {
         return novedadServicio.buscarPorId(idNovedad);
     }
 
-    public boolean actualizar(NovedadModel n) throws SQLException {
-        return novedadServicio.actualizar(n);
+    public boolean actualizar(NovedadModel novedad) throws SQLException {
+        return novedadServicio.actualizar(novedad);
     }
 
     public boolean eliminar(int idNovedad) throws SQLException {
         return novedadServicio.eliminar(idNovedad);
     }
-
-    // Listas auxiliares
     public List<EstudianteModel> listarEstudiantes() throws SQLException {
         return estudiantes.listar();
     }

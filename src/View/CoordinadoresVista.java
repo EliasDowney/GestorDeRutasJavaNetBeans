@@ -131,15 +131,21 @@ public class CoordinadoresVista extends JFrame {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
-            for (CoordinadorModel c : controlador.listar()) {
-                filas.add(c);
-                modeloTabla.addRow(new Object[]{c.getDocumento(), c.getNombre(), c.getApellido(),
-                    c.getTelefono(), c.getCorreo(), c.getEstado()});
+            for (CoordinadorModel coordinador : controlador.listar()) {
+                filas.add(coordinador);
+                modeloTabla.addRow(new Object[]{coordinador.getDocumento(), coordinador.getNombre(), coordinador.getApellido(),
+                    coordinador.getTelefono(), coordinador.getCorreo(), coordinador.getEstado()});
             }
             limpiarFormulario();
         } catch (SQLException ex) {
             fallo(ex);
         }
+        configurarPlaceholder(txtDocumento, "Ej: 10203040");
+        configurarPlaceholder(txtNombre, "Ej: Juan");
+        configurarPlaceholder(txtApellido, "Ej: Pérez");
+        configurarPlaceholder(txtTelefono, "Ej: 3001234567");
+        configurarPlaceholder(txtCorreo, "Ej: ejemp@gmail.com / outlook.com / hotmail.com / yahoo.com ");
+        
     }
 
     private void cargarSeleccion() {
@@ -147,33 +153,31 @@ public class CoordinadoresVista extends JFrame {
         if (fila < 0) {
             return;
         }
-        CoordinadorModel c = filas.get(fila);
-        idSeleccionado = c.getIdCoordinador();
-        txtDocumento.setText(c.getDocumento());
-        txtNombre.setText(c.getNombre());
-        txtApellido.setText(c.getApellido());
-        txtTelefono.setText(c.getTelefono());
-        txtCorreo.setText(c.getCorreo());
-        cmbEstado.setSelectedItem(c.getEstado());
-        btnEstado.setText("ACTIVO".equalsIgnoreCase(c.getEstado()) ? "Inactivar" : "Activar");
+        CoordinadorModel coordinador = filas.get(fila);
+        idSeleccionado = coordinador.getIdCoordinador();
+        txtDocumento.setText(coordinador.getDocumento());
+        txtNombre.setText(coordinador.getNombre());
+        txtApellido.setText(coordinador.getApellido());
+        txtTelefono.setText(coordinador.getTelefono());
+        txtCorreo.setText(coordinador.getCorreo());
+        cmbEstado.setSelectedItem(coordinador.getEstado());
+        btnEstado.setText("ACTIVO".equalsIgnoreCase(coordinador.getEstado()) ? "Inactivar" : "Activar");
     }
 
     private void accionGuardar() {
-        if (txtDocumento.getText().trim().isEmpty() || txtNombre.getText().trim().isEmpty()
-                || txtApellido.getText().trim().isEmpty()) {
-            aviso("Documento, nombre y apellido son obligatorios.");
-            return;
-        }
         try {
-            controlador.guardar(recoger(false));
-            JOptionPane.showMessageDialog(this, "Coordinador registrado correctamente.",
-                    "Coordinadores", JOptionPane.INFORMATION_MESSAGE);
-            cargarTabla();
-        } catch (SQLException ex) {
+            boolean exito = controlador.guardarConValidacion(recoger(false));
+            if (exito) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Coordinador registrado correctamente.",
+                        "Coordinadores", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                cargarTabla();
+                limpiarFormulario();
+            }
+        } catch (java.sql.SQLException ex) {
             fallo(ex);
         }
     }
-
+        
     private void accionActualizar() {
         if (idSeleccionado < 0) {
             aviso("Seleccione un coordinador de la tabla para actualizarlo.");
@@ -200,18 +204,18 @@ public class CoordinadoresVista extends JFrame {
             aviso("Seleccione un coordinador de la tabla.");
             return;
         }
-        CoordinadorModel c = filas.get(fila);
-        boolean activo = "ACTIVO".equalsIgnoreCase(c.getEstado());
+        CoordinadorModel coordinador = filas.get(fila);
+        boolean activo = "ACTIVO".equalsIgnoreCase(coordinador.getEstado());
         String accion = activo ? "inactivar" : "activar";
         int opcion = JOptionPane.showConfirmDialog(this,
-                "¿Desea " + accion + " al coordinador " + c.getNombre() + " " + c.getApellido() + "?",
+                "¿Desea " + accion + " al coordinador " + coordinador.getNombre() + " " + coordinador.getApellido() + "?",
                 "Cambiar estado", JOptionPane.YES_NO_OPTION);
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-        c.setEstado(activo ? "INACTIVO" : "ACTIVO");
+        coordinador.setEstado(activo ? "INACTIVO" : "ACTIVO");
         try {
-            controlador.actualizar(c);
+            controlador.actualizar(coordinador);
             cargarTabla();
         } catch (SQLException ex) {
             fallo(ex);
@@ -219,14 +223,16 @@ public class CoordinadoresVista extends JFrame {
     }
 
     private CoordinadorModel recoger(boolean conId) {
+        int idFinal = conId ? idSeleccionado : 0;
         return new CoordinadorModel(
-                conId ? idSeleccionado : 0,
-                txtCorreo.getText().trim(),
-                txtDocumento.getText().trim(),
-                txtNombre.getText().trim(),
-                txtApellido.getText().trim(),
-                txtTelefono.getText().trim(),
-                (String) cmbEstado.getSelectedItem());
+                txtDocumento.getText().trim(),        
+                txtNombre.getText().trim(),          
+                txtApellido.getText().trim(),         
+                txtTelefono.getText().trim(),         
+                txtCorreo.getText().trim(),           
+                (String) cmbEstado.getSelectedItem(), 
+                idFinal                               
+        );
     }
 
     private void limpiarFormulario() {
@@ -273,5 +279,28 @@ public class CoordinadoresVista extends JFrame {
         boton.setFocusPainted(false);
         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
-
+    private void configurarPlaceholder(javax.swing.JTextField textField, String textoGuia) {
+        if (textField.getText().trim().isEmpty()) {
+            textField.setText(textoGuia);
+            textField.setForeground(java.awt.Color.GRAY);
+        }
+        
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (textField.getText().equals(textoGuia)) {
+                    textField.setText("");
+                    textField.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (textField.getText().trim().isEmpty()) {
+                    textField.setText(textoGuia);
+                    textField.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+    }
 }

@@ -18,6 +18,7 @@ public class MatriculasVista extends JFrame {
     private final JTextField txtApellido = new JTextField();
     private final JTextField txtTelefono = new JTextField();
     private final JTextField txtGrado = new JTextField();
+    private final JComboBox<String> cmbTipoVia = new JComboBox<>(new String[]{"Calle", "Carrera", "Transversal", "Avenida", "Diagonal"});
     private final JTextField txtDireccion = new JTextField();
     private final JTextField txtNombreAcudiente = new JTextField();
     private final JTextField txtCorreoAcudiente = new JTextField();
@@ -34,6 +35,12 @@ public class MatriculasVista extends JFrame {
     private final List<EstudianteModel> filas = new ArrayList<>();
     private final JButton btnEstado = new JButton("Inactivar");
     private int idSeleccionado = -1;
+    
+    public String getDireccionCompleta() {
+    String tipoVia = cmbTipoVia.getSelectedItem() != null ? cmbTipoVia.getSelectedItem().toString() : "";
+    String Direccion = txtDireccion.getText().trim();
+    return tipoVia + " " + Direccion;
+}
 
     public MatriculasVista() {
         setTitle("Colegio La Divina Ruta - Matriculas");
@@ -41,7 +48,7 @@ public class MatriculasVista extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-
+        
         JPanel header = new JPanel();
         header.setBackground(Tema.NAVY);
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
@@ -77,11 +84,19 @@ public class MatriculasVista extends JFrame {
         formulario.add(crearCampo("Apellido:", txtApellido));
         formulario.add(crearCampo("Telefono:", txtTelefono));
         formulario.add(crearCampo("Grado:", txtGrado));
-        formulario.add(crearCampo("Direccion:", txtDireccion));
         formulario.add(crearCampo("Nom. acudiente:", txtNombreAcudiente));
         formulario.add(crearCampo("Correo acudiente:", txtCorreoAcudiente));
         formulario.add(crearCampo("Estado:", cmbEstado));
 
+        JPanel panelDir = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panelDir.setBackground(Color.WHITE);
+        cmbTipoVia.setPreferredSize(new Dimension(95, 26));
+        txtDireccion.setPreferredSize(new Dimension(110, 26));
+        panelDir.add(cmbTipoVia);
+        panelDir.add(Box.createHorizontalStrut(5));
+        panelDir.add(txtDireccion);
+
+    formulario.add(crearCampo("Direccion:", panelDir));
         JPanel botones = new JPanel();
         botones.setBackground(Color.WHITE);
         botones.setLayout(new FlowLayout(FlowLayout.LEFT, 8, 8));
@@ -133,19 +148,28 @@ public class MatriculasVista extends JFrame {
         cargarTabla();
     }
 
-    private void cargarTabla() {
+    private void cargarTabla()
+    {
         try {
             modeloTabla.setRowCount(0);
             filas.clear();
-            for (EstudianteModel est : controlador.listar()) {
-                filas.add(est);
-                modeloTabla.addRow(new Object[]{est.getDocumento(), est.getNombre(), est.getApellido(),
-                    est.getGrado(), est.getDireccion(), est.getNombreAcudiente(), est.getEstado()});
+            for (EstudianteModel estudiante : controlador.listar()) {
+                filas.add(estudiante);
+                modeloTabla.addRow(new Object[]{estudiante.getDocumento(), estudiante.getNombre(), estudiante.getApellido(),
+                    estudiante.getGrado(), estudiante.getDireccion(), estudiante.getNombreAcudiente(), estudiante.getEstado()});
             }
             limpiarFormulario();
         } catch (SQLException ex) {
             fallo(ex);
         }
+        configurarPlaceholder(txtDocumento, "Ej: 10203040");
+        configurarPlaceholder(txtNombre, "Ej: Juan");
+        configurarPlaceholder(txtApellido, "Ej: Pérez");
+        configurarPlaceholder(txtTelefono, "Ej: 3001234567");
+        configurarPlaceholder(txtGrado, "Ej: 11");
+        configurarPlaceholder(txtDireccion, "Ej: 45 # 20");
+        configurarPlaceholder(txtNombreAcudiente, "Ej: María Pérez");
+        configurarPlaceholder(txtCorreoAcudiente, "Ej: ejemp@gmail.com / outlook.com / hotmail.com / yahoo.com ");
     }
 
     private void cargarSeleccion() {
@@ -153,18 +177,18 @@ public class MatriculasVista extends JFrame {
         if (fila < 0) {
             return;
         }
-        EstudianteModel est = filas.get(fila);
-        idSeleccionado = est.getIdEstudiante();
-        txtDocumento.setText(est.getDocumento());
-        txtNombre.setText(est.getNombre());
-        txtApellido.setText(est.getApellido());
-        txtTelefono.setText(est.getTelefono());
-        txtGrado.setText(est.getGrado());
-        txtDireccion.setText(est.getDireccion());
-        txtNombreAcudiente.setText(est.getNombreAcudiente());
-        txtCorreoAcudiente.setText(est.getCorreoAcudiente());
-        cmbEstado.setSelectedItem(est.getEstado());
-        btnEstado.setText("ACTIVO".equalsIgnoreCase(est.getEstado()) ? "Inactivar" : "Activar");
+        EstudianteModel estudiante = filas.get(fila);
+        idSeleccionado = estudiante.getIdEstudiante();
+        txtDocumento.setText(estudiante.getDocumento());
+        txtNombre.setText(estudiante.getNombre());
+        txtApellido.setText(estudiante.getApellido());
+        txtTelefono.setText(estudiante.getTelefono());
+        txtGrado.setText(estudiante.getGrado());
+        txtDireccion.setText(estudiante.getDireccion());
+        txtNombreAcudiente.setText(estudiante.getNombreAcudiente());
+        txtCorreoAcudiente.setText(estudiante.getCorreoAcudiente());
+        cmbEstado.setSelectedItem(estudiante.getEstado());
+        btnEstado.setText("ACTIVO".equalsIgnoreCase(estudiante.getEstado()) ? "Inactivar" : "Activar");
     }
 
     private void accionGuardar() {
@@ -173,11 +197,17 @@ public class MatriculasVista extends JFrame {
             aviso("Documento, nombre y apellido son obligatorios.");
             return;
         }
+        
         try {
-            controlador.guardar(recoger(false));
-            JOptionPane.showMessageDialog(this, "Estudiante matriculado correctamente.",
-                    "Matriculas", JOptionPane.INFORMATION_MESSAGE);
-            cargarTabla();
+            EstudianteModel estudiante = recoger(false);
+           
+            boolean exito = controlador.guardarConValidacion(estudiante);
+            
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Estudiante matriculado correctamente.",
+                        "Matriculas", JOptionPane.INFORMATION_MESSAGE);
+                cargarTabla();
+            }
         } catch (SQLException ex) {
             fallo(ex);
         }
@@ -209,18 +239,18 @@ public class MatriculasVista extends JFrame {
             aviso("Seleccione un estudiante de la tabla.");
             return;
         }
-        EstudianteModel est = filas.get(fila);
-        boolean activo = "ACTIVO".equalsIgnoreCase(est.getEstado());
+        EstudianteModel estudiante = filas.get(fila);
+        boolean activo = "ACTIVO".equalsIgnoreCase(estudiante.getEstado());
         String accion = activo ? "inactivar" : "activar";
         int opcion = JOptionPane.showConfirmDialog(this,
-                "¿Desea " + accion + " al estudiante " + est.getNombre() + " " + est.getApellido() + "?",
+                "¿Desea " + accion + " al estudiante " + estudiante.getNombre() + " " + estudiante.getApellido() + "?",
                 "Cambiar estado", JOptionPane.YES_NO_OPTION);
         if (opcion != JOptionPane.YES_OPTION) {
             return;
         }
-        est.setEstado(activo ? "INACTIVO" : "ACTIVO");
+        estudiante.setEstado(activo ? "INACTIVO" : "ACTIVO");
         try {
-            controlador.actualizar(est);
+            controlador.actualizar(estudiante);
             cargarTabla();
         } catch (SQLException ex) {
             fallo(ex);
@@ -228,18 +258,41 @@ public class MatriculasVista extends JFrame {
     }
 
     private EstudianteModel recoger(boolean conId) {
-        EstudianteModel est = new EstudianteModel(
-                conId ? idSeleccionado : 0,
-                txtGrado.getText().trim(),
-                txtDireccion.getText().trim(),
-                txtNombreAcudiente.getText().trim(),
-                txtCorreoAcudiente.getText().trim(),
-                txtDocumento.getText().trim(),
-                txtNombre.getText().trim(),
-                txtApellido.getText().trim(),
-                txtTelefono.getText().trim(),
-                (String) cmbEstado.getSelectedItem());
-        return est;
+        Integer idRuta = null;
+        String docTexto = txtDocumento.getText().trim();
+        String  documento = docTexto.equals("Ej: 10203040") ? "" : docTexto;
+
+        String nomTexto = txtNombre.getText().trim();
+        String nombre = nomTexto.equals("Ej: Juan") ? "" : nomTexto;
+
+        String apeTexto = txtApellido.getText().trim();
+        String apellido = apeTexto.equals("Ej: Pérez") ? "" : apeTexto;
+
+        String telTexto = txtTelefono.getText().trim();
+        String telefono = telTexto.equals("Ej: 3001234567") ? "" : telTexto;
+
+        String gradoTexto = txtGrado.getText().trim();
+        String grado = gradoTexto.equals("Ej: 11-A") ? "" : gradoTexto;
+
+        String acudTexto = txtNombreAcudiente.getText().trim();
+        String nombreAcudiente = acudTexto.equals("Ej: María Pérez") ? "" : acudTexto;
+
+        String correoTexto = txtCorreoAcudiente.getText().trim();
+        String correoAcudiente = correoTexto.equals("Ej: correo@gmail.com") ? "" : correoTexto;
+        
+        return new EstudianteModel(
+            txtDocumento.getText().trim(),        
+            txtNombre.getText().trim(),           
+            txtApellido.getText().trim(),         
+            txtTelefono.getText().trim(),         
+            (String) cmbEstado.getSelectedItem(), 
+            conId ? idSeleccionado : 0,           
+            txtGrado.getText().trim(),            
+            getDireccionCompleta(),               
+            txtNombreAcudiente.getText().trim(),  
+            txtCorreoAcudiente.getText().trim(),  
+            idRuta                                
+        );
     }
 
     private void limpiarFormulario() {
@@ -293,5 +346,29 @@ public class MatriculasVista extends JFrame {
         boton.setFocusPainted(false);
         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
-
+    
+    private void configurarPlaceholder(javax.swing.JTextField textField, String textoGuia) {
+        if (textField.getText().trim().isEmpty()) {
+            textField.setText(textoGuia);
+            textField.setForeground(java.awt.Color.GRAY);
+        }
+        
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (textField.getText().equals(textoGuia)) {
+                    textField.setText("");
+                    textField.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (textField.getText().trim().isEmpty()) {
+                    textField.setText(textoGuia);
+                    textField.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+    }
 }
