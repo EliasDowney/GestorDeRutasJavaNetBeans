@@ -99,4 +99,30 @@ public class RutaController {
     public String textoDiferencia(int realSegundos, int programadoMin) {
         return servicio.textoDiferencia(realSegundos, programadoMin);
     }
+   
+
+    public int cuposDisponibles(RutaModel ruta) throws SQLException {
+        return servicio.cuposDisponibles(ruta);
+    }
+
+    public String resumenOcupacion(RutaModel ruta) throws SQLException {
+        int ocupados = servicio.cuposOcupados(ruta);
+        int libres = servicio.cuposDisponibles(ruta);
+        double porcentaje = servicio.porcentajeOcupacion(ruta);
+        long minutos = servicio.duracionMinutos(ruta);
+        return ocupados + " estudiantes, " + libres + " cupos libres ("
+                + String.format("%.1f", porcentaje) + "% ocupada). Duración: " + minutos + " min";
+    }
+    
+    public String mensajeEstadoRuta(RutaModel ruta) throws SQLException {
+    String estado = "ACTIVO".equalsIgnoreCase(ruta.getEstado()) ? "ACTIVA" : "INACTIVA";
+     if (!"ACTIVO".equalsIgnoreCase(ruta.getEstado())) {
+        return "INACTIVA";
+    }
+    return "Ruta: " + ruta.getNombre() + "\n"
+            + "Estado: " + estado + "\n"
+            + "Conductor: " + datosConductor(ruta.getIdConductor()) + "\n"
+            + "Vehiculo: " + datosVehiculo(ruta.getIdVehiculo()) + "\n"
+            + resumenOcupacion(ruta);
+}
 }

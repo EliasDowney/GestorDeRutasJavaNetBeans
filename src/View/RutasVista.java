@@ -38,6 +38,7 @@ public class RutasVista extends JFrame {
     private final JButton btnNueva = new JButton("Nueva ruta");
     private final JButton btnEditar = new JButton("Editar ruta");
     private final JButton btnEstadoRuta = new JButton("Inactivar ruta");
+    private final JButton btnVerEstado = new JButton("Ver estado de la ruta");
     private List<EstudianteModel> asignados = new ArrayList<>();
     private final JButton btnRecorrido = new JButton("Simular recorrido");
 private static final int ESCALA_SEGUNDOS = 1;   // 1 = tiempo real (60 = 1 segundo real vale 1 minuto)
@@ -131,13 +132,16 @@ private int segundosUltimaParada;
         estiloBoton(btnNueva, Tema.NAVY, Color.WHITE);
         estiloBoton(btnEditar, Tema.LIGHT, Color.BLACK);
         estiloBoton(btnEstadoRuta, Tema.NAVY, Color.WHITE);
+        estiloBoton(btnVerEstado, Tema.GOLD, Color.BLACK);
         gestion.add(btnNueva);
         gestion.add(Box.createVerticalStrut(8));
         gestion.add(btnEditar);
         gestion.add(Box.createVerticalStrut(8));
         gestion.add(btnEstadoRuta);
+        gestion.add(Box.createVerticalStrut(8));
+        gestion.add(btnVerEstado);
         gestion.setAlignmentX(LEFT_ALIGNMENT);
-        gestion.setMaximumSize(new Dimension(310, 150));
+        gestion.setMaximumSize(new Dimension(310, 200));
 
         izquierda.add(lblRuta);
         izquierda.add(Box.createVerticalStrut(6));
@@ -188,6 +192,7 @@ private int segundosUltimaParada;
         btnNueva.addActionListener(e -> accionNuevaRuta());
         btnEditar.addActionListener(e -> accionEditarRuta());
         btnEstadoRuta.addActionListener(e -> accionCambiarEstadoRuta());
+        btnVerEstado.addActionListener(e -> accionVerEstadoRuta());
         btnVolver.addActionListener(e -> dispose());
         btnRecorrido.addActionListener(e -> accionRecorrido());
 
@@ -335,6 +340,20 @@ private int segundosUltimaParada;
             cargarRutas();
         } catch (SQLException ex) {
             fallo(ex);
+        }
+    }
+
+    private void accionVerEstadoRuta() {
+        RutaModel rutaSeleccionada = (RutaModel) comboRutas.getSelectedItem();
+        if (rutaSeleccionada == null) {
+            aviso("Seleccione una ruta.");
+            return;
+        }
+        try {
+            String mensaje = controlador.mensajeEstadoRuta(rutaSeleccionada);
+            JOptionPane.showMessageDialog(this, mensaje, "Estado de la ruta", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error de conexion con la BD (XAMPP encendido?)", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
