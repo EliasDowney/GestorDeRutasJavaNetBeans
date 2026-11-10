@@ -13,7 +13,8 @@ public class CoordinadorRepository {
 
     public int guardar(CoordinadorModel coordinador) throws SQLException {
         String sql = "INSERT INTO coordinador (documento, nombre, apellido, telefono, correo, estado) VALUES (?,?,?,?,?,?)";
-        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, coordinador.getDocumento());
             ps.setString(2, coordinador.getNombre());
             ps.setString(3, coordinador.getApellido());
@@ -33,7 +34,9 @@ public class CoordinadorRepository {
     public List<CoordinadorModel> listar() throws SQLException {
         List<CoordinadorModel> lista = new ArrayList<>();
         String sql = "SELECT * FROM coordinador";
-        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql); ResultSet resultadoConsulta = ps.executeQuery()) {
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql); 
+             ResultSet resultadoConsulta = ps.executeQuery()) {
             while (resultadoConsulta.next()) {
                 lista.add(fila(resultadoConsulta));
             }
@@ -43,7 +46,8 @@ public class CoordinadorRepository {
 
     public CoordinadorModel buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM coordinador WHERE id_coordinador=?";
-        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet resultadoConsulta = ps.executeQuery()) {
                 if (resultadoConsulta.next()) {
@@ -56,7 +60,8 @@ public class CoordinadorRepository {
 
     public boolean actualizar(CoordinadorModel coordinador) throws SQLException {
         String sql = "UPDATE coordinador SET documento=?, nombre=?, apellido=?, telefono=?, correo=?, estado=? WHERE id_coordinador=?";
-        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setString(1, coordinador.getDocumento());
             ps.setString(2, coordinador.getNombre());
             ps.setString(3, coordinador.getApellido());
@@ -70,16 +75,22 @@ public class CoordinadorRepository {
 
     public boolean eliminar(int id) throws SQLException {
         String sql = "DELETE FROM coordinador WHERE id_coordinador=?";
-        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
+        try (Connection conexion = Conexion.conectar(); 
+             PreparedStatement ps = conexion.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         }
     }
 
     private CoordinadorModel fila(ResultSet resultadoConsulta) throws SQLException {
-        return new CoordinadorModel(resultadoConsulta.getInt("id_coordinador"), resultadoConsulta.getString("correo"),
-                resultadoConsulta.getString("documento"), resultadoConsulta.getString("nombre"), resultadoConsulta.getString("apellido"),
-                resultadoConsulta.getString("telefono"), resultadoConsulta.getString("estado"));
+        return new CoordinadorModel(
+            resultadoConsulta.getString("documento"), 
+            resultadoConsulta.getString("nombre"), 
+            resultadoConsulta.getString("apellido"),
+            resultadoConsulta.getString("telefono"), 
+            resultadoConsulta.getString("correo"),
+            resultadoConsulta.getString("estado"),
+            resultadoConsulta.getInt("id_coordinador")
+        );
     }
-
-}
+ }

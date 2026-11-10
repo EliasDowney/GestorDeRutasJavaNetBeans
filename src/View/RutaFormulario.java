@@ -144,7 +144,7 @@ public class RutaFormulario extends JDialog {
             aviso("Debe seleccionar conductor, vehiculo y coordinador.");
             return;
         }
-        RutaModel r = new RutaModel(
+        RutaModel modeloRuta = new RutaModel(
                 ruta == null ? 0 : ruta.getIdRuta(),
                 nombre, salida, finalHora, (String) cmbEstado.getSelectedItem(),
                 ((ConductorModel) cmbConductor.getSelectedItem()).getIdConductor(),
@@ -152,9 +152,9 @@ public class RutaFormulario extends JDialog {
                 ((CoordinadorModel) cmbCoordinador.getSelectedItem()).getIdCoordinador());
         try {
             if (ruta == null) {
-                controlador.guardar(r);
+                controlador.guardar(modeloRuta);
             } else {
-                controlador.actualizar(r);
+                controlador.actualizar(modeloRuta);
             }
             guardado = true;
             dispose();

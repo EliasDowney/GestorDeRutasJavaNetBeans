@@ -13,7 +13,7 @@ public class ConductorRepository {
 
     public int guardar(ConductorModel conductor) throws SQLException {
         String sql = "INSERT INTO conductor (documento, nombre, apellido, telefono, licencia, estado) VALUES (?,?,?,?,?,?)";
-        try (Connection connection = Conexion.conectar(); PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, conductor.getDocumento());
             ps.setString(2, conductor.getNombre());
             ps.setString(3, conductor.getApellido());
@@ -54,6 +54,20 @@ public class ConductorRepository {
         return null;
     }
 
+    // ⭐ MÉTODO CLAVE: Valida si el documento ya existe para cumplir la regla "No CRUD"
+    public ConductorModel buscarPorDocumento(String documento) throws SQLException {
+        String sql = "SELECT * FROM conductor WHERE documento=?";
+        try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
+            ps.setString(1, documento);
+            try (ResultSet resultadoConsulta = ps.executeQuery()) {
+                if (resultadoConsulta.next()) {
+                    return fila(resultadoConsulta);
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean actualizar(ConductorModel conductor) throws SQLException {
         String sql = "UPDATE conductor SET documento=?, nombre=?, apellido=?, telefono=?, licencia=?, estado=? WHERE id_conductor=?";
         try (Connection conexion = Conexion.conectar(); PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -77,9 +91,13 @@ public class ConductorRepository {
     }
 
     private ConductorModel fila(ResultSet resultadoConsulta) throws SQLException {
-        return new ConductorModel(resultadoConsulta.getInt("id_conductor"), resultadoConsulta.getString("licencia"),
-                resultadoConsulta.getString("documento"), resultadoConsulta.getString("nombre"), resultadoConsulta.getString("apellido"),
-                resultadoConsulta.getString("telefono"), resultadoConsulta.getString("estado"));
+        return new ConductorModel(
+            resultadoConsulta.getString("documento"), 
+            resultadoConsulta.getString("nombre"), 
+            resultadoConsulta.getString("apellido"),
+            resultadoConsulta.getString("telefono"), 
+            resultadoConsulta.getString("estado"),
+            resultadoConsulta.getInt("id_conductor"), 
+            resultadoConsulta.getString("licencia")   
+        );   }
     }
-
-}

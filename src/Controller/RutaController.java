@@ -5,12 +5,10 @@ import Model.CoordinadorModel;
 import Model.EstudianteModel;
 import Model.RutaModel;
 import Model.VehiculoModel;
-import Service.ConductorService;
-import Service.CoordinadorService;
-import Service.RutaService;
-import Service.VehiculoService;
+import Service.*;
 import java.sql.SQLException;
 import java.util.List;
+import java.time.LocalTime;
 
 public class RutaController {
 
@@ -86,5 +84,19 @@ public class RutaController {
         VehiculoModel vehiculo = vehiculoServicio.buscarPorId(idVehiculo);
         return (vehiculo == null) ? 0 : vehiculo.getCapacidad();
     }
+    public List<String> paradasRecorrido(List<EstudianteModel> asignados) {
+        return servicio.paradasRecorrido(asignados);
+    }
 
+    public LocalTime horaSalida(RutaModel ruta) {
+        return servicio.horaSalida(ruta);
+    }
+
+    public int minutosPorParada(RutaModel ruta, int totalParadas) {
+        return servicio.minutosPorParada(ruta, totalParadas);
+    }
+
+    public String textoDiferencia(int realSegundos, int programadoMin) {
+        return servicio.textoDiferencia(realSegundos, programadoMin);
+    }
 }

@@ -16,8 +16,6 @@ public class NovedadEstudianteController extends NovedadController {
     public List<NovedadEstudianteModel> listarNovedadesEstudiante() throws SQLException {
         return servicio.listar();
     }
-
-    // Aportado en el PR #6 por el companero
     public NovedadEstudianteModel buscarNovedadEstudiantePorId(int idNovedad) throws SQLException {
         return servicio.buscarPorId(idNovedad);
     }

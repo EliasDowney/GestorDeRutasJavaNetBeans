@@ -11,10 +11,14 @@ public class DemoConsola {
         RutaService service = new RutaService();
 
         List<EstudianteModel> pendientes = new ArrayList<>();
-        pendientes.add(new EstudianteModel(1, "10", "CRA 100 # 77-83", "Ana", "ana@mail.com", "1001", "Ana", "Perez", "3001", "ACTIVO"));
-        pendientes.add(new EstudianteModel(2, "9", "CLL 127 # 5-20", "Luis", "luis@mail.com", "1002", "Luis", "Gomez", "3002", "ACTIVO"));
-        pendientes.add(new EstudianteModel(3, "11", "KR 30 # 10-25", "Sofia", "sofia@mail.com", "1003", "Sofia", "Diaz", "3003", "ACTIVO"));
-        pendientes.add(new EstudianteModel(4, "8", "CLL 13 # 9-40", "Carlos", "carlos@mail.com", "1004", "Carlos", "Rojas", "3004", "ACTIVO"));
+        
+        // Orden según los atributos de tu EstudianteModel:
+        // (documento, nombre, apellido, telefono, estado, idEstudiante, grado, direccion, nombreAcudiente, correoAcudiente, idRuta)
+        
+        pendientes.add(new EstudianteModel("1001", "Ana", "Perez", "3001", "ACTIVO", 1, "10", "CRA 100 # 77-83", "Ana", "ana@mail.com", null));
+        pendientes.add(new EstudianteModel("1002", "Luis", "Gomez", "3002", "ACTIVO", 2, "9", "CLL 127 # 5-20", "Luis", "luis@mail.com", null));
+        pendientes.add(new EstudianteModel("1003", "Sofia", "Diaz", "3003", "ACTIVO", 3, "11", "KR 30 # 10-25", "Sofia", "sofia@mail.com", null));
+        pendientes.add(new EstudianteModel("1004", "Carlos", "Rojas", "3004", "ACTIVO", 4, "8", "CLL 13 # 9-40", "Carlos", "carlos@mail.com", null));
 
         System.out.println("=== ESTUDIANTES PENDIENTES ===");
         for (EstudianteModel e : pendientes) {
@@ -37,5 +41,4 @@ public class DemoConsola {
             }
         }
     }
-
 }

@@ -6,6 +6,8 @@ import Model.EstudianteModel;
 import Model.RutaModel;
 import java.awt.*;
 import java.sql.SQLException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -37,6 +39,13 @@ public class RutasVista extends JFrame {
     private final JButton btnEditar = new JButton("Editar ruta");
     private final JButton btnEstadoRuta = new JButton("Inactivar ruta");
     private List<EstudianteModel> asignados = new ArrayList<>();
+    private final JButton btnRecorrido = new JButton("Simular recorrido");
+private static final int ESCALA_SEGUNDOS = 1;   // 1 = tiempo real (60 = 1 segundo real vale 1 minuto)
+private static final Color VERDE = new Color(0x2E7D32);
+private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("hh:mm:ss a");
+private int indiceParada;
+private int segundosSimulados;
+private int segundosUltimaParada;
     private boolean cargando;
 
     public RutasVista(AdministradorModel admin) {
@@ -87,14 +96,14 @@ public class RutasVista extends JFrame {
         info.setBackground(Tema.LIGHT);
         info.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Tema.GRAY), " Informacion de la ruta "));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(3, 6, 3, 6);
-        gbc.anchor = GridBagConstraints.WEST;
-        agregarInfo(info, gbc, 0, "Conductor:", lblConductor);
-        agregarInfo(info, gbc, 1, "Vehiculo:", lblVehiculo);
-        agregarInfo(info, gbc, 2, "Coordinador:", lblCoordinador);
-        agregarInfo(info, gbc, 3, "Horario:", lblHorario);
-        agregarInfo(info, gbc, 4, "Estado:", lblEstado);
+        GridBagConstraints restricionesDistribucion = new GridBagConstraints();
+        restricionesDistribucion.insets = new Insets(3, 6, 3, 6);
+        restricionesDistribucion.anchor = GridBagConstraints.WEST;
+        agregarInfo(info, restricionesDistribucion, 0, "Conductor:", lblConductor);
+        agregarInfo(info, restricionesDistribucion, 1, "Vehiculo:", lblVehiculo);
+        agregarInfo(info, restricionesDistribucion, 2, "Coordinador:", lblCoordinador);
+        agregarInfo(info, restricionesDistribucion, 3, "Horario:", lblHorario);
+        agregarInfo(info, restricionesDistribucion, 4, "Estado:", lblEstado);
         info.setMaximumSize(new Dimension(300, 150));
         info.setAlignmentX(LEFT_ALIGNMENT);
 
@@ -104,11 +113,14 @@ public class RutasVista extends JFrame {
         estiloBoton(btnAsignar, Tema.GOLD, Color.BLACK);
         estiloBoton(btnQuitar, Tema.LIGHT, Color.BLACK);
         estiloBoton(btnRefrescar, Tema.LIGHT, Color.BLACK);
+        estiloBoton(btnRecorrido, Tema.NAVY, Color.WHITE);
         botones.add(btnAsignar);
         botones.add(Box.createVerticalStrut(8));
         botones.add(btnQuitar);
         botones.add(Box.createVerticalStrut(8));
         botones.add(btnRefrescar);
+        botones.add(Box.createVerticalStrut(8));
+        botones.add(btnRecorrido);
         botones.setAlignmentX(LEFT_ALIGNMENT);
 
         JPanel gestion = new JPanel();
@@ -177,6 +189,7 @@ public class RutasVista extends JFrame {
         btnEditar.addActionListener(e -> accionEditarRuta());
         btnEstadoRuta.addActionListener(e -> accionCambiarEstadoRuta());
         btnVolver.addActionListener(e -> dispose());
+        btnRecorrido.addActionListener(e -> accionRecorrido());
 
         cargarRutas();
     }
@@ -342,15 +355,15 @@ public class RutasVista extends JFrame {
         return l;
     }
 
-    private static void agregarInfo(JPanel panel, GridBagConstraints gbc, int fila, String texto, JLabel valor) {
-        gbc.gridx = 0;
-        gbc.gridy = fila;
+    private static void agregarInfo(JPanel panel, GridBagConstraints restricionesDistribucion, int fila, String texto, JLabel valor) {
+        restricionesDistribucion.gridx = 0;
+        restricionesDistribucion.gridy = fila;
         JLabel lbl = new JLabel(texto);
         lbl.setFont(Tema.fuente(Font.BOLD, 13));
         lbl.setForeground(Tema.NAVY);
-        panel.add(lbl, gbc);
-        gbc.gridx = 1;
-        panel.add(valor, gbc);
+        panel.add(lbl, restricionesDistribucion);
+        restricionesDistribucion.gridx = 1;
+        panel.add(valor, restricionesDistribucion);
     }
 
     private static void estiloBoton(JButton boton, Color fondo, Color texto) {
@@ -362,5 +375,99 @@ public class RutasVista extends JFrame {
         boton.setAlignmentX(LEFT_ALIGNMENT);
         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
+    private void accionRecorrido() {
+        RutaModel ruta = (RutaModel) comboRutas.getSelectedItem();
+        if (ruta == null || asignados.isEmpty()) {
+            aviso(ruta == null ? "Seleccione una ruta para simular el recorrido."
+                    : "La ruta no tiene estudiantes asignados.");
+            return;
+        }
+        List<String> paradas = controlador.paradasRecorrido(asignados);
+        int total = paradas.size();
+        LocalTime salida = controlador.horaSalida(ruta);
+        int minPorParada = controlador.minutosPorParada(ruta, total);
+        indiceParada = segundosSimulados = segundosUltimaParada = 0;
 
+        DefaultListModel<String> modelo = new DefaultListModel<>();
+        for (int i = 0; i < total; i++) {
+            modelo.addElement("");
+        }
+        JList<String> lista = new JList<>(modelo);
+        lista.setFont(Tema.fuente(Font.PLAIN, 16));
+        lista.setFocusable(false);
+        JTextArea registro = new JTextArea();
+        registro.setEditable(false);
+        JLabel lblParada = new JLabel("", SwingConstants.CENTER);
+        lblParada.setOpaque(true);
+        lblParada.setForeground(Color.WHITE);
+        lblParada.setFont(Tema.fuente(Font.BOLD, 22));
+        lblParada.setPreferredSize(new Dimension(100, 90));
+        JLabel lblTiempo = new JLabel("", SwingConstants.CENTER);
+        JButton btnSiguiente = new JButton();
+        estiloBoton(btnSiguiente, Tema.GOLD, Color.BLACK);
+
+        
+        Runnable notaSalida = () -> registro.setText(
+                "Salida: Colegio La Divina Ruta | " + salida.format(FORMATO_HORA) + "\n");
+
+        
+        Runnable pintar = () -> {
+            for (int i = 0; i < total; i++) {
+                modelo.set(i, "Parada " + (i + 1) + ": " + paradas.get(i)
+                        + (i == indiceParada ? "   -   en trayecto" : ""));
+            }
+            lista.setSelectedIndex(Math.min(indiceParada, total - 1));
+            lblParada.setBackground(indiceParada == 0 ? Tema.NAVY : VERDE);
+            lblParada.setText(indiceParada == 0 ? "Salida: Colegio La Divina Ruta"
+                    : indiceParada >= total ? "Recorrido finalizado"
+                    : "Parada " + indiceParada + ": " + paradas.get(indiceParada - 1) + " - Completada");
+            btnSiguiente.setText(indiceParada >= total ? "Reiniciar recorrido" : "Siguiente Parada");
+            lblTiempo.setText(String.format("Hora: %s  |  Transcurrido: %02d:%02d  |  Estimado: +%d de %d min",
+                    salida.plusSeconds(segundosSimulados).format(FORMATO_HORA),
+                    segundosSimulados / 60, segundosSimulados % 60,
+                    indiceParada * minPorParada, total * minPorParada));
+        };
+        Timer reloj = new Timer(1000, ev -> {
+            segundosSimulados += ESCALA_SEGUNDOS;
+            pintar.run();
+        });
+        btnSiguiente.addActionListener(ev -> {
+            if (indiceParada >= total) { 
+                indiceParada = segundosSimulados = segundosUltimaParada = 0;
+                notaSalida.run();
+                reloj.start();
+            } else {
+                int real = segundosSimulados - segundosUltimaParada; 
+                registro.append(String.format("Parada %d: llegada %s | real %02d:%02d | programado %d min | %s%n",
+                        indiceParada + 1, salida.plusSeconds(segundosSimulados).format(FORMATO_HORA),
+                        real / 60, real % 60, minPorParada, controlador.textoDiferencia(real, minPorParada)));
+                segundosUltimaParada = segundosSimulados;
+                if (++indiceParada >= total) {
+                    reloj.stop();
+                }
+            }
+            pintar.run();
+        });
+
+        JPanel centro = new JPanel(new GridLayout(2, 1, 0, 8));
+        centro.add(new JScrollPane(lista));
+        centro.add(new JScrollPane(registro));
+        JPanel sur = new JPanel(new BorderLayout(0, 8));
+        JPanel panelBoton = new JPanel();
+        panelBoton.add(btnSiguiente);
+        sur.add(panelBoton, BorderLayout.NORTH);
+        sur.add(lblTiempo, BorderLayout.SOUTH);
+
+        JDialog dialogo = new JDialog(this, "Recorrido - " + ruta.getNombre(), true);
+        dialogo.add(lblParada, BorderLayout.NORTH);
+        dialogo.add(centro, BorderLayout.CENTER);
+        dialogo.add(sur, BorderLayout.SOUTH);
+        dialogo.setSize(700, 640);
+        dialogo.setLocationRelativeTo(this);
+        notaSalida.run();
+        pintar.run();
+        reloj.start();
+        dialogo.setVisible(true); 
+        reloj.stop();
+    }
 }

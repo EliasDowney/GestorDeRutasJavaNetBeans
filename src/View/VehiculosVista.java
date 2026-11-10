@@ -150,19 +150,18 @@ public class VehiculosVista extends JFrame {
     }
 
     private void accionGuardar() {
-        VehiculoModel vehiculo = recoger(false);
-        if (vehiculo == null) {
-            return;
-        }
         try {
-            controlador.guardar(vehiculo);
-            JOptionPane.showMessageDialog(this, "Vehiculo registrado correctamente.",
-                    "Vehiculos", JOptionPane.INFORMATION_MESSAGE);
-            cargarTabla();
-        }catch (Exepcionv Placarepetida){
-            aviso(Placarepetida.getMessage());
-        } catch (SQLException ex) {
-            fallo(ex);
+            boolean exito = controlador.guardarConValidacion(recoger(false));
+            if (exito) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Vehículo registrado correctamente.", 
+                    "Vehículos", 
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                cargarTabla();
+                limpiarFormulario();
+            }
+        } catch (SQLException | Exepcionv ex) {
+            aviso(ex.getMessage());
         }
     }
 

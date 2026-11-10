@@ -10,6 +10,11 @@ public class ConductorService {
     private final ConductorRepository repositorio = new ConductorRepository();
 
     public int guardar(ConductorModel conductor) throws SQLException {
+        ConductorModel conductorExistente = repositorio.buscarPorDocumento(conductor.getDocumento());
+        if (conductorExistente != null) {
+            return -1;
+        }
+        
         return repositorio.guardar(conductor);
     }
 
@@ -22,6 +27,9 @@ public class ConductorService {
     }
 
     public boolean actualizar(ConductorModel conductor) throws SQLException {
+        if (conductor.getDocumento() == null || conductor.getDocumento().trim().isEmpty()) {
+            return false;
+        }
         return repositorio.actualizar(conductor);
     }
 

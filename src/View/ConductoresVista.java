@@ -140,6 +140,11 @@ public class ConductoresVista extends JFrame {
         } catch (SQLException ex) {
             fallo(ex);
         }
+        configurarPlaceholder(txtDocumento, "Ej: 10203040");
+        configurarPlaceholder(txtNombre, "Ej: Juan");
+        configurarPlaceholder(txtApellido, "Ej: Pérez");
+        configurarPlaceholder(txtTelefono, "Ej: 3001234567");
+        configurarPlaceholder(txtLicencia, "Ej: C2 / C3 / C4");
     }
 
     private void cargarSeleccion() {
@@ -165,10 +170,12 @@ public class ConductoresVista extends JFrame {
             return;
         }
         try {
-            controlador.guardar(recoger(false));
-            JOptionPane.showMessageDialog(this, "Conductor registrado correctamente.",
-                    "Conductores", JOptionPane.INFORMATION_MESSAGE);
-            cargarTabla();
+            boolean exito = controlador.guardarConValidacion(recoger(false));
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Conductor registrado correctamente.",
+                        "Conductores", JOptionPane.INFORMATION_MESSAGE);
+                cargarTabla();
+            }
         } catch (SQLException ex) {
             fallo(ex);
         }
@@ -219,14 +226,16 @@ public class ConductoresVista extends JFrame {
     }
 
     private ConductorModel recoger(boolean conId) {
+        int idFinal = conId ? idSeleccionado : 0;
         return new ConductorModel(
-                conId ? idSeleccionado : 0,
-                txtLicencia.getText().trim(),
-                txtDocumento.getText().trim(),
-                txtNombre.getText().trim(),
-                txtApellido.getText().trim(),
-                txtTelefono.getText().trim(),
-                (String) cmbEstado.getSelectedItem());
+            txtDocumento.getText().trim(),       
+            txtNombre.getText().trim(),           
+            txtApellido.getText().trim(),         
+            txtTelefono.getText().trim(),         
+            (String) cmbEstado.getSelectedItem(), 
+            idFinal,                              
+            txtLicencia.getText().trim()          
+        );
     }
 
     private void limpiarFormulario() {
@@ -273,5 +282,28 @@ public class ConductoresVista extends JFrame {
         boton.setFocusPainted(false);
         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
-
+    private void configurarPlaceholder(javax.swing.JTextField textField, String textoGuia) {
+        if (textField.getText().trim().isEmpty()) {
+            textField.setText(textoGuia);
+            textField.setForeground(java.awt.Color.GRAY);
+        }
+        
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (textField.getText().equals(textoGuia)) {
+                    textField.setText("");
+                    textField.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (textField.getText().trim().isEmpty()) {
+                    textField.setText(textoGuia);
+                    textField.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+    }
 }

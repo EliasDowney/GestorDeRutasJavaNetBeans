@@ -125,15 +125,21 @@ public class EstudianteRepository {
     }
 
     private EstudianteModel fila(ResultSet resultadoConsulta) throws SQLException {
-        EstudianteModel estudiante = new EstudianteModel(resultadoConsulta.getInt("id_estudiante"), resultadoConsulta.getString("grado"),
-                resultadoConsulta.getString("direccion"), resultadoConsulta.getString("nombre_acudiente"), resultadoConsulta.getString("correo_acudiente"),
-                resultadoConsulta.getString("documento"), resultadoConsulta.getString("nombre"), resultadoConsulta.getString("apellido"),
-                resultadoConsulta.getString("telefono"), resultadoConsulta.getString("estado"));
-        Object idRuta = resultadoConsulta.getObject("id_ruta");
-        if (idRuta != null) {
-            estudiante.setIdRuta((Integer) idRuta);
-        }
-        return estudiante;
-    }
+        Object idRutaObj = resultadoConsulta.getObject("id_ruta");
+        Integer idRuta = (idRutaObj != null) ? (Integer) idRutaObj : null;
 
+        return new EstudianteModel(
+            resultadoConsulta.getString("documento"),
+            resultadoConsulta.getString("nombre"),
+            resultadoConsulta.getString("apellido"),
+            resultadoConsulta.getString("telefono"),
+            resultadoConsulta.getString("estado"),
+            resultadoConsulta.getInt("id_estudiante"),
+            resultadoConsulta.getString("grado"),
+            resultadoConsulta.getString("direccion"),
+            resultadoConsulta.getString("nombre_acudiente"),
+            resultadoConsulta.getString("correo_acudiente"),
+            idRuta
+        );
+    }
 }

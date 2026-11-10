@@ -140,6 +140,12 @@ public class CoordinadoresVista extends JFrame {
         } catch (SQLException ex) {
             fallo(ex);
         }
+        configurarPlaceholder(txtDocumento, "Ej: 10203040");
+        configurarPlaceholder(txtNombre, "Ej: Juan");
+        configurarPlaceholder(txtApellido, "Ej: Pérez");
+        configurarPlaceholder(txtTelefono, "Ej: 3001234567");
+        configurarPlaceholder(txtCorreo, "Ej: ejemp@gmail.com / outlook.com / hotmail.com / yahoo.com ");
+        
     }
 
     private void cargarSeleccion() {
@@ -159,21 +165,19 @@ public class CoordinadoresVista extends JFrame {
     }
 
     private void accionGuardar() {
-        if (txtDocumento.getText().trim().isEmpty() || txtNombre.getText().trim().isEmpty()
-                || txtApellido.getText().trim().isEmpty()) {
-            aviso("Documento, nombre y apellido son obligatorios.");
-            return;
-        }
         try {
-            controlador.guardar(recoger(false));
-            JOptionPane.showMessageDialog(this, "Coordinador registrado correctamente.",
-                    "Coordinadores", JOptionPane.INFORMATION_MESSAGE);
-            cargarTabla();
-        } catch (SQLException ex) {
+            boolean exito = controlador.guardarConValidacion(recoger(false));
+            if (exito) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Coordinador registrado correctamente.",
+                        "Coordinadores", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                cargarTabla();
+                limpiarFormulario();
+            }
+        } catch (java.sql.SQLException ex) {
             fallo(ex);
         }
     }
-
+        
     private void accionActualizar() {
         if (idSeleccionado < 0) {
             aviso("Seleccione un coordinador de la tabla para actualizarlo.");
@@ -219,14 +223,16 @@ public class CoordinadoresVista extends JFrame {
     }
 
     private CoordinadorModel recoger(boolean conId) {
+        int idFinal = conId ? idSeleccionado : 0;
         return new CoordinadorModel(
-                conId ? idSeleccionado : 0,
-                txtCorreo.getText().trim(),
-                txtDocumento.getText().trim(),
-                txtNombre.getText().trim(),
-                txtApellido.getText().trim(),
-                txtTelefono.getText().trim(),
-                (String) cmbEstado.getSelectedItem());
+                txtDocumento.getText().trim(),        
+                txtNombre.getText().trim(),          
+                txtApellido.getText().trim(),         
+                txtTelefono.getText().trim(),         
+                txtCorreo.getText().trim(),           
+                (String) cmbEstado.getSelectedItem(), 
+                idFinal                               
+        );
     }
 
     private void limpiarFormulario() {
@@ -273,5 +279,28 @@ public class CoordinadoresVista extends JFrame {
         boton.setFocusPainted(false);
         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
-
+    private void configurarPlaceholder(javax.swing.JTextField textField, String textoGuia) {
+        if (textField.getText().trim().isEmpty()) {
+            textField.setText(textoGuia);
+            textField.setForeground(java.awt.Color.GRAY);
+        }
+        
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                if (textField.getText().equals(textoGuia)) {
+                    textField.setText("");
+                    textField.setForeground(java.awt.Color.BLACK);
+                }
+            }
+            
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                if (textField.getText().trim().isEmpty()) {
+                    textField.setText(textoGuia);
+                    textField.setForeground(java.awt.Color.GRAY);
+                }
+            }
+        });
+    }
 }

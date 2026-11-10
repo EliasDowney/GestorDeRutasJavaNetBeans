@@ -17,7 +17,6 @@ public class VehiculoService {
     }
   }
 
-
     private final VehiculoRepository repositorio = new VehiculoRepository();
 
     

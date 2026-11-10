@@ -7,11 +7,11 @@ import Repository.EstudianteRepository;
 import Repository.RutaRepository;
 import Repository.VehiculoRepository;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.time.Duration;
+import java.time.LocalTime;
 
 public class RutaService {
 
@@ -98,5 +98,42 @@ public class RutaService {
     public boolean quitarEstudiante(int idEstudiante) throws SQLException {
         return estudianteRepositorio.quitarRuta(idEstudiante);
     }
+    private static final int MINUTOS_POR_PARADA = 10;
+    public List<String> paradasRecorrido(List<EstudianteModel> asignados) {
+        List<EstudianteModel> ordenados = new ArrayList<>(asignados);
+        ordenados.sort(Comparator.comparingInt(
+                (EstudianteModel estudiante) -> numeroDeDireccion(estudiante.getDireccion())));
+        List<String> paradas = new ArrayList<>();
+        for (EstudianteModel estudiante : ordenados) {
+            String direccion = estudiante.getDireccion();
+            paradas.add(direccion == null || direccion.isBlank() ? "Sin direccion" : direccion);
+        }
+        return paradas;
+    }
 
+    public LocalTime horaSalida(RutaModel ruta) {
+        return leerHora(ruta.getHoraSalida(), LocalTime.of(6, 0));
+    }
+    public int minutosPorParada(RutaModel ruta, int totalParadas) {
+        LocalTime salida = horaSalida(ruta);
+        long duracion = Duration.between(salida, leerHora(ruta.getHoraFinal(), salida)).toMinutes();
+        return (duracion > 0 && totalParadas > 0)
+                ? (int) Math.max(1, duracion / totalParadas) : MINUTOS_POR_PARADA;
+    }
+    public String textoDiferencia(int realSegundos, int programadoMin) {
+        int dif = realSegundos - programadoMin * 60;
+        if (dif == 0) {
+            return "justo a tiempo";
+        }
+        int abs = Math.abs(dif);
+        return (dif < 0 ? "adelantados " : "retrasados ") + (abs / 60) + " min " + (abs % 60) + " s";
+    }
+
+    private LocalTime leerHora(Object valor, LocalTime porDefecto) {
+        try {
+            return LocalTime.parse(String.valueOf(valor));
+        } catch (Exception ex) {
+            return porDefecto;
+        }
+    }
 }
