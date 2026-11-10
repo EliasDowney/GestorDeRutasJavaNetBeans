@@ -39,19 +39,20 @@ public class RutasVista extends JFrame {
     private final JButton btnEditar = new JButton("Editar ruta");
     private final JButton btnEstadoRuta = new JButton("Inactivar ruta");
     private final JButton btnVerEstado = new JButton("Ver estado de la ruta");
-    private List<EstudianteModel> asignados = new ArrayList<>();
     private final JButton btnRecorrido = new JButton("Simular recorrido");
-private static final int ESCALA_SEGUNDOS = 1;   // 1 = tiempo real (60 = 1 segundo real vale 1 minuto)
-private static final Color VERDE = new Color(0x2E7D32);
-private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("hh:mm:ss a");
-private int indiceParada;
-private int segundosSimulados;
-private int segundosUltimaParada;
+    private List<EstudianteModel> asignados = new ArrayList<>();
+
+    private static final int ESCALA_SEGUNDOS = 1;   
+    private static final Color VERDE = new Color(0x2E7D32);
+    private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("hh:mm:ss a");
+    private int indiceParada;
+    private int segundosSimulados;
+    private int segundosUltimaParada;
     private boolean cargando;
 
     public RutasVista(AdministradorModel admin) {
         setTitle("Colegio La Divina Ruta - Asignacion de Rutas");
-        setSize(950, 700);
+        setSize(950, 800);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -83,7 +84,6 @@ private int segundosUltimaParada;
         JPanel izquierda = new JPanel();
         izquierda.setBackground(Color.WHITE);
         izquierda.setLayout(new BoxLayout(izquierda, BoxLayout.Y_AXIS));
-        izquierda.setPreferredSize(new Dimension(300, 100));
 
         JLabel lblRuta = new JLabel("Seleccione la ruta:");
         lblRuta.setFont(Tema.fuente(Font.BOLD, 14));
@@ -141,7 +141,7 @@ private int segundosUltimaParada;
         gestion.add(Box.createVerticalStrut(8));
         gestion.add(btnVerEstado);
         gestion.setAlignmentX(LEFT_ALIGNMENT);
-        gestion.setMaximumSize(new Dimension(310, 200));
+        gestion.setMaximumSize(new Dimension(310, Integer.MAX_VALUE));
 
         izquierda.add(lblRuta);
         izquierda.add(Box.createVerticalStrut(6));
@@ -152,7 +152,15 @@ private int segundosUltimaParada;
         izquierda.add(botones);
         izquierda.add(Box.createVerticalStrut(12));
         izquierda.add(gestion);
-        centro.add(izquierda, BorderLayout.WEST);
+
+        JScrollPane scrollIzquierda = new JScrollPane(izquierda,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollIzquierda.setBorder(null);
+        scrollIzquierda.getViewport().setBackground(Color.WHITE);
+        scrollIzquierda.getVerticalScrollBar().setUnitIncrement(16);
+        scrollIzquierda.setPreferredSize(new Dimension(325, 100));
+        centro.add(scrollIzquierda, BorderLayout.WEST);
 
         JPanel derecha = new JPanel(new BorderLayout(0, 8));
         derecha.setBackground(Color.WHITE);
@@ -394,6 +402,7 @@ private int segundosUltimaParada;
         boton.setAlignmentX(LEFT_ALIGNMENT);
         boton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
+
     private void accionRecorrido() {
         RutaModel ruta = (RutaModel) comboRutas.getSelectedItem();
         if (ruta == null || asignados.isEmpty()) {
@@ -425,11 +434,9 @@ private int segundosUltimaParada;
         JButton btnSiguiente = new JButton();
         estiloBoton(btnSiguiente, Tema.GOLD, Color.BLACK);
 
-        
         Runnable notaSalida = () -> registro.setText(
                 "Salida: Colegio La Divina Ruta | " + salida.format(FORMATO_HORA) + "\n");
 
-        
         Runnable pintar = () -> {
             for (int i = 0; i < total; i++) {
                 modelo.set(i, "Parada " + (i + 1) + ": " + paradas.get(i)
@@ -451,12 +458,12 @@ private int segundosUltimaParada;
             pintar.run();
         });
         btnSiguiente.addActionListener(ev -> {
-            if (indiceParada >= total) { 
+            if (indiceParada >= total) {
                 indiceParada = segundosSimulados = segundosUltimaParada = 0;
                 notaSalida.run();
                 reloj.start();
             } else {
-                int real = segundosSimulados - segundosUltimaParada; 
+                int real = segundosSimulados - segundosUltimaParada;
                 registro.append(String.format("Parada %d: llegada %s | real %02d:%02d | programado %d min | %s%n",
                         indiceParada + 1, salida.plusSeconds(segundosSimulados).format(FORMATO_HORA),
                         real / 60, real % 60, minPorParada, controlador.textoDiferencia(real, minPorParada)));
@@ -486,7 +493,7 @@ private int segundosUltimaParada;
         notaSalida.run();
         pintar.run();
         reloj.start();
-        dialogo.setVisible(true); 
+        dialogo.setVisible(true);
         reloj.stop();
     }
 }
